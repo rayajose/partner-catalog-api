@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
 from uuid import uuid4
+from fastapi import HTTPException
 
 app = FastAPI(
     title="Partner Catalog API",
@@ -10,6 +11,7 @@ app = FastAPI(
 )
 
 jobs = {}
+feeds = {}
 
 class FeedCreateRequest(BaseModel):
     partner_name: str
@@ -26,6 +28,13 @@ def create_feed(feed: FeedCreateRequest):
     feed_id = str(uuid4())
     job_id = str(uuid4())
 
+    feeds[feed_id] = {
+        "feed_id": feed_id,
+        "partner_name": feed.partner_name,
+        "file_name": feed.file_name,
+        "status": "uploaded"
+    }
+
     jobs[job_id] = {
         "job_id": job_id,
         "feed_id": feed_id,
@@ -36,11 +45,8 @@ def create_feed(feed: FeedCreateRequest):
     return {
         "feed_id": feed_id,
         "status": "uploaded",
-        "job_id": job_id,
-        "partner_name": feed.partner_name,
-        "file_name": feed.file_name
+        "job_id": job_id
     }
-
 @app.post("/feeds/{feed_id}/validate")
 def validate_feed(feed_id: str):
     job_id = str(uuid4())
@@ -63,5 +69,20 @@ def validate_feed(feed_id: str):
 def get_job(job_id: str):
     job = jobs.get(job_id)
     if not job:
-        return {"error": "Job not found", "job_id": job_id}
+        raise HTTPException(
+            status_code=404,
+            detail=f"Job {job_id} not found"
+        )
     return job
+
+@app.get("/feeds/{feed_id}")
+def get_feed(feed_id: str):
+    feed = feeds.get(feed_id)
+
+    if not feed:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Feed {feed_id} not found"
+        )
+
+    return feed
