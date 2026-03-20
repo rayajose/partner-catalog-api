@@ -1,9 +1,16 @@
 # Errors
 
 ## Standard error model
-Currently, errors are returned as simple JSON objects.
+All non-success responses use the following structure:
 
-Future versions will use a standard structure such as:
-- error_code
-- message
-- details
+```json
+{
+  "error_code": "STRING_CODE",
+  "message": "Human-readable summary",
+  "details": {
+    "field": "value"
+  }
+}
+
+
+#####
