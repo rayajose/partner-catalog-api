@@ -48,6 +48,7 @@ Creates a new feed and initiates a submission job.
 | 422    | Validation error     |
 
 ---
+See [Errors](errors.md) for error format.
 
 ## GET /feeds
 
@@ -62,20 +63,47 @@ Returns a list of feeds, optionally filtered by `status`, with simple pagination
 ### Request
 
 ```
-GET /feeds?status=uploaded&limit=2&offset=0
+GET /feeds?status=uploaded&limit=10&offset=0
 ```
+
+### Response Fields
+
+* `items` *(array of Feed)* — List of feed objects
+* `total` *(integer)* — Total number of matching feeds (before pagination)
+* `limit` *(integer)* — Maximum number of items returned
+* `offset` *(integer)* — Number of items skipped
+
+---
+
+### Pagination Behavior
+
+* Results are returned in the order they were created
+* Use `offset` to skip items
+* Use `limit` to control page size
+
 
 ### Response (200)
 
 ```json
-[
+{ 
+ "items": [
   {
     "feed_id": "f_1",
     "partner_name": "Any Company",
-    "file_name": "products.csv",
+    "file_name": "anyCompany_products.csv",
     "status": "uploaded"
-  }
-]
+  },
+  {
+      "feed_id": "Any Other Company",
+      "partner_name": "string",
+      "file_name": "anyOtherCompany_products.csv",
+      "status": "uploaded"
+    }
+  ],
+  "total": 3,
+  "limit": 10,
+  "offset": 0
+}
 ```
 
 ### Errors
@@ -84,6 +112,7 @@ GET /feeds?status=uploaded&limit=2&offset=0
 | ------ | ------------------------ |
 | 400    | Invalid query parameters |
 
+See [Errors](errors.md) for error format.
 ---
 
 ## GET /feeds/{feed_id}
@@ -118,6 +147,8 @@ GET /feeds/f_1
 | Status | Description    |
 | ------ | -------------- |
 | 404    | Feed not found |
+
+See [Errors](errors.md) for error format.
 
 #### Example Error
 
@@ -172,6 +203,7 @@ POST /feeds/f_1/validate
 | 409    | Feed is already validating or processed |
 
 ---
+See [Errors](errors.md) for error format.
 
 ## Feed Lifecycle
 

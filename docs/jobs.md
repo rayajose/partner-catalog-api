@@ -1,7 +1,7 @@
 # Jobs
 
 ## GET /jobs/{job_id}
-Retrieve job status
+Retrieve the job status. The job status values identify the current background process such as feed submission or validation.
 
 ### Path Parameters
 
@@ -23,3 +23,17 @@ POST /jobs/j_1
   "job_type": "feed_submission"
 }
 ```
+
+### Status values
+A job moves through the following states:
+- queued
+- running
+- completed
+- failed
+
+### Behavior
+
+- `queued` → created but not yet started  
+- `running` → actively processing  
+- `completed` → successfully finished  
+- `failed` → terminated with error  

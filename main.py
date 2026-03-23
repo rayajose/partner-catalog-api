@@ -1,4 +1,18 @@
 from fastapi import FastAPI
+
+from routers import feeds, jobs
+
+app = FastAPI(
+    title="Partner Catalog API",
+    version="0.1.0"
+)
+
+app.include_router(feeds.router)
+app.include_router(jobs.router)
+
+
+
+"""from fastapi import FastAPI
 from pydantic import BaseModel
 from uuid import uuid4
 from enum import Enum
@@ -58,12 +72,14 @@ class ErrorResponse(BaseModel):
     message: str
     details: Optional[Dict[str, Any]] = None
 
-"""
+
 @app.get("/")
 def read_root():
     return {"message": "Partner Catalog API is running"}
+
 """
 
+"""
 @app.post("/feeds", response_model=FeedCreateResponse, tags=["Feeds"])
 def create_feed(feed: FeedCreateRequest):
     global feed_counter, job_counter
@@ -190,6 +206,6 @@ def get_job(job_id: str):
             }
         )
     return job
-
+"""
 
 
