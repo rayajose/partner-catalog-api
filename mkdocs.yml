@@ -2,10 +2,17 @@ site_name: Partner Catalog API Docs
 
 theme:
   name: material
+  features:
+    - navigation.tabs
+  palette:
+    primary: blue
+
+repo_url: https://github.com/rayajose/partner-catalog-api
 
 nav:
-  - Overview: index.md
-  - Resources: resources.md
-  - Feeds: feeds.md
-  - Jobs: jobs.md
+  - Home: index.md
+  - API Overview: resources.md
+  - Feeds API: feeds.md
+  - Jobs API: jobs.md
   - Errors: errors.md
+  - Workflows: workflows.md

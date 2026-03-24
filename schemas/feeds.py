@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class FeedStatus(str, Enum):
     uploaded = "uploaded"
@@ -11,7 +11,7 @@ class FeedStatus(str, Enum):
 class FeedCreateRequest(BaseModel):
     partner_name: str
     file_name: str
-    submitted_by: str
+    submitted_by: EmailStr
     notes: Optional[str] = None
 
 class FeedCreateResponse(BaseModel):

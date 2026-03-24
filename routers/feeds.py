@@ -11,7 +11,6 @@ from schemas.feeds import (
     FeedListResponse
 )
 from schemas.jobs import JobStatus
-from store import feeds, jobs, feed_counter, job_counter
 
 router = APIRouter(tags=["Feeds"])
 

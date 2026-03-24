@@ -12,23 +12,50 @@ See [Feed resource](resources.md#feed) for full field definitions.
 
 Creates a new feed and initiates a submission job.
 
-### Fields
-
-* `partner_name` *(string, required)* — Name of the submitting partner
-* `file_name` *(string, required)* — Name of the uploaded file
-* `submitted_by` *(string, required)* — User submitting the feed
-* `notes` *(string, optional)* — Additional context or comments
+---
 
 ### Request Body
 
 ```json
 {
-  "partner_name": "Any Company",
+  "partner_name": "Acme Corp",
   "file_name": "products.csv",
-  "submitted_by": "Michelle Smith",
-  "notes": "list of new products"
+  "submitted_by": "user@acmecorp.com",
+  "notes": "Initial upload"
 }
 ```
+
+---
+
+### Fields
+
+* `partner_name` *(string, required)* — Name of the submitting partner
+* `file_name` *(string, required)* — Name of the uploaded file
+* `submitted_by` *(string, required, email)* — Email address of the user or system submitting the feed
+* `notes` *(string, optional)* — Additional context or comments
+
+---
+
+### Validation
+
+* `submitted_by` must be a valid email address
+* Invalid values will return a `422 Unprocessable Entity` response
+
+---
+
+### Example Request
+
+```bash
+curl -X POST http://127.0.0.1:8000/feeds \
+  -H "Content-Type: application/json" \
+  -d '{
+    "partner_name": "Acme Corp",
+    "file_name": "products.csv",
+    "submitted_by": "user@example.com"
+  }'
+```
+
+---
 
 ### Response (200)
 
@@ -40,14 +67,15 @@ Creates a new feed and initiates a submission job.
 }
 ```
 
+---
+
 ### Errors
 
-| Status | Description          |
-| ------ | -------------------- |
-| 400    | Invalid request body |
-| 422    | Validation error     |
+| Status | Description                                   |
+| ------ | --------------------------------------------- |
+| 400    | Invalid request body                          |
+| 422    | Validation error (e.g., invalid email format) |
 
----
 See [Errors](errors.md) for error format.
 
 ## GET /feeds
@@ -90,14 +118,14 @@ The response includes pagination metadata to support client-side paging and navi
  "items": [
   {
     "feed_id": "f_1",
-    "partner_name": "Any Company",
-    "file_name": "anyCompany_products.csv",
+    "partner_name": "Acme Corp",
+    "file_name": "products.csv",
     "status": "uploaded"
   },
   {
-      "feed_id": "Any Other Company",
-      "partner_name": "string",
-      "file_name": "anyOtherCompany_products.csv",
+      "feed_id": "f_2",
+      "partner_name": "AnyCompany",
+      "file_name": "products.xml",
       "status": "uploaded"
     }
   ],
@@ -136,7 +164,7 @@ GET /feeds/f_1
 [
   {
     "feed_id": "f_1",
-    "partner_name": "Any Company",
+    "partner_name": "Acme Corp",
     "file_name": "products.csv",
     "status": "uploaded"
   }

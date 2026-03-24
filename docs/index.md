@@ -6,6 +6,17 @@ This project demonstrates API design, schema modeling, and developer-focused doc
 
 ---
 
+## 🎯 Purpose
+
+This project demonstrates my ability to:
+
+- Design and document REST APIs  
+- Create structured, developer-focused documentation  
+- Model data and workflows using OpenAPI and JSON schemas  
+- Apply real-world concepts from e-commerce and partner onboarding systems  
+
+The API simulates a partner product ingestion workflow, similar to systems used in large-scale retail and rewards platforms.
+
 ## 🚀 Quick Start
 
 ### Base URL
