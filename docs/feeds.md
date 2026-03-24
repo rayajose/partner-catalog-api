@@ -65,6 +65,7 @@ Returns a list of feeds, optionally filtered by `status`, with simple pagination
 ```
 GET /feeds?status=uploaded&limit=10&offset=0
 ```
+The response includes pagination metadata to support client-side paging and navigation.
 
 ### Response Fields
 

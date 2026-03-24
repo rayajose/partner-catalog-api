@@ -1,0 +1,11 @@
+site_name: Partner Catalog API Docs
+
+theme:
+  name: material
+
+nav:
+  - Overview: overview.md
+  - Resources: resources.md
+  - Feeds: feeds.md
+  - Jobs: jobs.md
+  - Errors: errors.md
