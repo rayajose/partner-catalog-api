@@ -13,20 +13,6 @@ See [Feed resource](resources.md#feed) for full field definitions.
 Creates a new feed and initiates a submission job.
 
 ---
-
-### Request Body
-
-```json
-{
-  "partner_name": "Acme Corp",
-  "file_name": "products.csv",
-  "submitted_by": "user@acmecorp.com",
-  "notes": "Initial upload"
-}
-```
-
----
-
 ### Fields
 
 * `partner_name` *(string, required)* — Name of the submitting partner
@@ -42,7 +28,16 @@ Creates a new feed and initiates a submission job.
 * Invalid values will return a `422 Unprocessable Entity` response
 
 ---
+### Request Body
 
+```json
+{
+  "partner_name": "Acme Corp",
+  "file_name": "products.csv",
+  "submitted_by": "user@acmecorp.com",
+  "notes": "Initial upload"
+}
+```
 ### Example Request
 
 ```bash
@@ -51,7 +46,7 @@ curl -X POST http://127.0.0.1:8000/feeds \
   -d '{
     "partner_name": "Acme Corp",
     "file_name": "products.csv",
-    "submitted_by": "user@example.com"
+    "submitted_by": "user@acmecorp.com"
   }'
 ```
 
@@ -88,11 +83,13 @@ Returns a list of feeds, optionally filtered by `status`, with simple pagination
 * `limit` *(integer, optional, default: 10)* — Max number of results
 * `offset` *(integer, optional, default: 0)* — Number of results to skip
 
-### Request
+### Example: Filter + pagination
 
+```bash
+curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
 ```
-GET /feeds?status=uploaded&limit=10&offset=0
-```
+
+
 The response includes pagination metadata to support client-side paging and navigation.
 
 ### Response Fields
@@ -152,12 +149,6 @@ Returns a specific feed.
 
 * `feed_id` *(string, required)* — Unique identifier for the feed
 
-### Example Request
-
-```
-GET /feeds/f_1
-```
-
 ### Response (200)
 
 ```json
@@ -203,8 +194,9 @@ Starts validation for a feed.
 
 ### Example Request
 
-```
-POST /feeds/f_1/validate
+```bash
+curl -X POST http://127.0.0.1:8000/feeds/f_1/validate \
+  -H "Content-Type: application/json"
 ```
 
 ### Response (200)
