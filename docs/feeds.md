@@ -113,8 +113,8 @@ The response includes pagination metadata to support client-side paging and navi
 | ------ | ------------------------ |
 | 400    | Invalid query parameters |
 
-See [Errors](errors.md) for error format.
 ---
+See [Errors](errors.md) for error format.
 
 ## GET /feeds/{feed_id}
 

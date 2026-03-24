@@ -4,7 +4,7 @@ theme:
   name: material
 
 nav:
-  - Overview: overview.md
+  - Overview: index.md
   - Resources: resources.md
   - Feeds: feeds.md
   - Jobs: jobs.md
