@@ -1,3 +1,4 @@
+WORK IN PROGRESS
 # Partner Catalog API
 
 A REST API for submitting, validating, and tracking partner product feeds.
