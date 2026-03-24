@@ -23,11 +23,14 @@
     
     
       
-        <title>Feeds - Partner Catalog API Docs</title>
+        <title>Feeds API - Partner Catalog API Docs</title>
       
     
     
       <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,7 +58,12 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -76,9 +84,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="Partner Catalog API Docs" class="md-header__button md-logo" aria-label="Partner Catalog API Docs" data-md-component="logo">
       
@@ -100,15 +106,15 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Feeds
+              Feeds API
             
           </span>
         </div>
       </div>
     </div>
     
+      
     
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -153,6 +159,18 @@
       
     
     
+      <div class="md-header__source">
+        <a href="https://github.com/rayajose/partner-catalog-api" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
   </nav>
   
 </header>
@@ -161,6 +179,131 @@
       
       
         
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../resources/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Feeds API
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../jobs/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Jobs API
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../errors/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Errors
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../workflows/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Workflows
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
           
         
       
@@ -175,8 +318,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="Partner Catalog API Docs" class="md-nav__button md-logo" aria-label="Partner Catalog API Docs" data-md-component="logo">
       
@@ -186,6 +331,18 @@
     </a>
     Partner Catalog API Docs
   </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/rayajose/partner-catalog-api" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
   
   <ul class="md-nav__list" data-md-scrollfix>
     
@@ -203,7 +360,7 @@
   <span class="md-ellipsis">
     
   
-    Overview
+    Home
   
 
     
@@ -230,7 +387,7 @@
   <span class="md-ellipsis">
     
   
-    Resources
+    API Overview
   
 
     
@@ -266,7 +423,7 @@
   <span class="md-ellipsis">
     
   
-    Feeds
+    Feeds API
   
 
     
@@ -284,7 +441,7 @@
   <span class="md-ellipsis">
     
   
-    Feeds
+    Feeds API
   
 
     
@@ -333,10 +490,32 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#request-body" class="md-nav__link">
     <span class="md-ellipsis">
       
         Request Body
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Request
       
     </span>
   </a>
@@ -394,10 +573,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#request" class="md-nav__link">
+  <a href="#example-filter-pagination" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Request
+        Example: Filter + pagination
       
     </span>
   </a>
@@ -470,17 +649,6 @@
     <span class="md-ellipsis">
       
         Path Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-request" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example Request
       
     </span>
   </a>
@@ -664,7 +832,7 @@
   <span class="md-ellipsis">
     
   
-    Jobs
+    Jobs API
   
 
     
@@ -692,6 +860,33 @@
     
   
     Errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
   
 
     
@@ -754,10 +949,32 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#request-body" class="md-nav__link">
     <span class="md-ellipsis">
       
         Request Body
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Request
       
     </span>
   </a>
@@ -815,10 +1032,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#request" class="md-nav__link">
+  <a href="#example-filter-pagination" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Request
+        Example: Filter + pagination
       
     </span>
   </a>
@@ -891,17 +1108,6 @@
     <span class="md-ellipsis">
       
         Path Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-request" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example Request
       
     </span>
   </a>
@@ -1079,6 +1285,9 @@
                   
 
 
+  
+  
+
 
 <h1 id="feeds">Feeds</h1>
 <p>Represents a partner-submitted product data file. Each feed goes through a lifecycle:</p>
@@ -1087,21 +1296,39 @@
 <hr />
 <h2 id="post-feeds">POST /feeds</h2>
 <p>Creates a new feed and initiates a submission job.</p>
+<hr />
 <h3 id="fields">Fields</h3>
 <ul>
 <li><code>partner_name</code> <em>(string, required)</em> — Name of the submitting partner</li>
 <li><code>file_name</code> <em>(string, required)</em> — Name of the uploaded file</li>
-<li><code>submitted_by</code> <em>(string, required)</em> — User submitting the feed</li>
+<li><code>submitted_by</code> <em>(string, required, email)</em> — Email address of the user or system submitting the feed</li>
 <li><code>notes</code> <em>(string, optional)</em> — Additional context or comments</li>
 </ul>
+<hr />
+<h3 id="validation">Validation</h3>
+<ul>
+<li><code>submitted_by</code> must be a valid email address</li>
+<li>Invalid values will return a <code>422 Unprocessable Entity</code> response</li>
+</ul>
+<hr />
 <h3 id="request-body">Request Body</h3>
 <pre><code class="language-json">{
-  &quot;partner_name&quot;: &quot;Any Company&quot;,
+  &quot;partner_name&quot;: &quot;Acme Corp&quot;,
   &quot;file_name&quot;: &quot;products.csv&quot;,
-  &quot;submitted_by&quot;: &quot;Michelle Smith&quot;,
-  &quot;notes&quot;: &quot;list of new products&quot;
+  &quot;submitted_by&quot;: &quot;user@acmecorp.com&quot;,
+  &quot;notes&quot;: &quot;Initial upload&quot;
 }
 </code></pre>
+<h3 id="example-request">Example Request</h3>
+<pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/feeds \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;partner_name&quot;: &quot;Acme Corp&quot;,
+    &quot;file_name&quot;: &quot;products.csv&quot;,
+    &quot;submitted_by&quot;: &quot;user@acmecorp.com&quot;
+  }'
+</code></pre>
+<hr />
 <h3 id="response-200">Response (200)</h3>
 <pre><code class="language-json">{
   &quot;feed_id&quot;: &quot;f_1&quot;,
@@ -1109,6 +1336,7 @@
   &quot;job_id&quot;: &quot;j_1&quot;
 }
 </code></pre>
+<hr />
 <h3 id="errors">Errors</h3>
 <table>
 <thead>
@@ -1124,11 +1352,10 @@
 </tr>
 <tr>
 <td>422</td>
-<td>Validation error</td>
+<td>Validation error (e.g., invalid email format)</td>
 </tr>
 </tbody>
 </table>
-<hr />
 <p>See <a href="../errors/">Errors</a> for error format.</p>
 <h2 id="get-feeds">GET /feeds</h2>
 <p>Returns a list of feeds, optionally filtered by <code>status</code>, with simple pagination.</p>
@@ -1138,8 +1365,8 @@
 <li><code>limit</code> <em>(integer, optional, default: 10)</em> — Max number of results</li>
 <li><code>offset</code> <em>(integer, optional, default: 0)</em> — Number of results to skip</li>
 </ul>
-<h3 id="request">Request</h3>
-<pre><code>GET /feeds?status=uploaded&amp;limit=10&amp;offset=0
+<h3 id="example-filter-pagination">Example: Filter + pagination</h3>
+<pre><code class="language-bash">curl &quot;http://127.0.0.1:8000/feeds?status=uploaded&amp;limit=2&amp;offset=0&quot;
 </code></pre>
 <p>The response includes pagination metadata to support client-side paging and navigation.</p>
 <h3 id="response-fields">Response Fields</h3>
@@ -1161,14 +1388,14 @@
  &quot;items&quot;: [
   {
     &quot;feed_id&quot;: &quot;f_1&quot;,
-    &quot;partner_name&quot;: &quot;Any Company&quot;,
-    &quot;file_name&quot;: &quot;anyCompany_products.csv&quot;,
+    &quot;partner_name&quot;: &quot;Acme Corp&quot;,
+    &quot;file_name&quot;: &quot;products.csv&quot;,
     &quot;status&quot;: &quot;uploaded&quot;
   },
   {
-      &quot;feed_id&quot;: &quot;Any Other Company&quot;,
-      &quot;partner_name&quot;: &quot;string&quot;,
-      &quot;file_name&quot;: &quot;anyOtherCompany_products.csv&quot;,
+      &quot;feed_id&quot;: &quot;f_2&quot;,
+      &quot;partner_name&quot;: &quot;AnyCompany&quot;,
+      &quot;file_name&quot;: &quot;products.xml&quot;,
       &quot;status&quot;: &quot;uploaded&quot;
     }
   ],
@@ -1200,14 +1427,11 @@
 <ul>
 <li><code>feed_id</code> <em>(string, required)</em> — Unique identifier for the feed</li>
 </ul>
-<h3 id="example-request">Example Request</h3>
-<pre><code>GET /feeds/f_1
-</code></pre>
 <h3 id="response-200_2">Response (200)</h3>
 <pre><code class="language-json">[
   {
     &quot;feed_id&quot;: &quot;f_1&quot;,
-    &quot;partner_name&quot;: &quot;Any Company&quot;,
+    &quot;partner_name&quot;: &quot;Acme Corp&quot;,
     &quot;file_name&quot;: &quot;products.csv&quot;,
     &quot;status&quot;: &quot;uploaded&quot;
   }
@@ -1246,7 +1470,8 @@
 <li><code>feed_id</code> <em>(string, required)</em> — Unique identifier for the feed</li>
 </ul>
 <h3 id="example-request_1">Example Request</h3>
-<pre><code>POST /feeds/f_1/validate
+<pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/feeds/f_1/validate \
+  -H &quot;Content-Type: application/json&quot;
 </code></pre>
 <h3 id="response-200_3">Response (200)</h3>
 <pre><code class="language-json">{
@@ -1377,7 +1602,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
