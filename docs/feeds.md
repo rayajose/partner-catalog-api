@@ -126,7 +126,7 @@ The response includes pagination metadata to support client-side paging and navi
       "status": "uploaded"
     }
   ],
-  "total": 3,
+  "total": 2,
   "limit": 10,
   "offset": 0
 }
