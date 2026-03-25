@@ -1,7 +1,7 @@
 # Jobs
 
 ## GET /jobs/{job_id}
-Retrieve the job status. The job status values identify the current background process such as feed submission or validation.
+Returns the current status and details of a processing job.
 
 ### Path Parameters
 

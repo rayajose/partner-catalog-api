@@ -10,7 +10,7 @@ See [Feed resource](resources.md#feed) for full field definitions.
 
 ## POST /feeds
 
-Creates a new feed and initiates a submission job.
+Submits a partner product feed and creates an associated processing job.
 
 ---
 ### Fields
@@ -75,7 +75,7 @@ See [Errors](errors.md) for error format.
 
 ## GET /feeds
 
-Returns a list of feeds, optionally filtered by `status`, with simple pagination.
+Returns a paginated list of feeds with optional filtering by status.
 
 ### Query Parameters
 
@@ -152,7 +152,7 @@ See [Errors](errors.md) for error format.
 
 ## GET /feeds/{feed_id}
 
-Returns a specific feed.
+Retrieves details for a specific feed.
 
 ### Path Parameters
 
@@ -195,7 +195,7 @@ See [Errors](errors.md) for error format.
 
 ## POST /feeds/{feed_id}/validate
 
-Starts validation for a feed.
+Creates a validation job for the specified feed and updates the feed status to validating.
 
 ### Path Parameters
 
