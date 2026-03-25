@@ -1,4 +1,5 @@
 site_name: Partner Catalog API Docs
+site_url: https://rayajose.github.io/partner-catalog-api/
 
 theme:
   name: material
