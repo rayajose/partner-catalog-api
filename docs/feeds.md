@@ -83,11 +83,20 @@ Returns a list of feeds, optionally filtered by `status`, with simple pagination
 * `limit` *(integer, optional, default: 10)* — Max number of results
 * `offset` *(integer, optional, default: 0)* — Number of results to skip
 
-### Example: Filter + pagination
+### Example requests
+
+```bash
+curl "http://127.0.0.1:8000/feeds"
+```
+
+```bash
+curl "http://127.0.0.1:8000/feeds?status=uploaded"
+```
 
 ```bash
 curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
 ```
+
 
 
 The response includes pagination metadata to support client-side paging and navigation.

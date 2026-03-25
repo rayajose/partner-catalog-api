@@ -11,7 +11,8 @@ from store import jobs
 @router.get(
     "/jobs/{job_id}",
     response_model=JobResponse,
-    responses={404: {"model": ErrorResponse, "description": "Job not found"}}
+    responses={404: {"model": ErrorResponse, "description": "Job not found"}}, summary="Get job status",
+description="Returns the current status and details of a processing job."
 )
 def get_job(job_id: str):
     job = jobs.get(job_id)

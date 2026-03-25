@@ -8,14 +8,11 @@ from schemas.feeds import (
     FeedCreateResponse,
     FeedResponse,
     FeedStatus,
-    FeedListResponse
-)
+    FeedListResponse)
 from schemas.jobs import JobStatus
 from store import feeds, jobs, feed_counter, job_counter
 
 router = APIRouter(tags=["Feeds"])
-
-from store import feeds, jobs, feed_counter, job_counter
 
 feed_id = f"f_{feed_counter['value']}"
 feed_counter["value"] += 1
@@ -23,7 +20,8 @@ feed_counter["value"] += 1
 job_id = f"j_{job_counter['value']}"
 job_counter["value"] += 1
 
-@router.post("/feeds", response_model=FeedCreateResponse)
+@router.post("/feeds", response_model=FeedCreateResponse, summary="Create a new feed",
+description="Submits a partner product feed and creates an associated processing job.")
 def create_feed(feed: FeedCreateRequest):
     feed_id = f"f_{feed_counter['value']}"
     feed_counter["value"] += 1
@@ -53,7 +51,8 @@ def create_feed(feed: FeedCreateRequest):
 @router.get(
     "/feeds/{feed_id}",
     response_model=FeedResponse,
-    responses={404: {"model": ErrorResponse, "description": "Feed not found"}}
+    responses={404: {"model": ErrorResponse, "description": "Feed not found"}}, summary="Get feed by ID",
+description="Retrieves details for a specific feed."
 )
 def get_feed(feed_id: str):
     feed = feeds.get(feed_id)
@@ -68,7 +67,8 @@ def get_feed(feed_id: str):
         )
     return feed
 
-@router.post("/feeds/{feed_id}/validate")
+@router.post("/feeds/{feed_id}/validate", summary="Start feed validation",
+description="Creates a validation job for the specified feed and updates the feed status to validating.")
 def validate_feed(feed_id: str):
     if feed_id not in feeds:
         return JSONResponse(
@@ -99,7 +99,8 @@ def validate_feed(feed_id: str):
         "status": FeedStatus.validating,
     }
 
-@router.get("/feeds", response_model=FeedListResponse)
+@router.get("/feeds", response_model=FeedListResponse, summary="List feeds",
+description="Returns a paginated list of feeds with optional filtering by status.")
 def list_feeds(status: Optional[FeedStatus] = None, limit: int = 10, offset: int = 0):
     all_feeds = list(feeds.values())
 
