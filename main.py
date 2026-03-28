@@ -14,7 +14,10 @@ tags_metadata = [
 
 app = FastAPI(
     title="Partner Catalog API",
-    description="A demo API for partner feed submission, validation, and job tracking.",
+    description=(
+        "A demo REST API for partner feed submission, validation, and job tracking. "
+        "This project demonstrates API design, schema modeling, and developer-focused documentation."
+    ),
     version="0.1.0",
     openapi_tags=tags_metadata,
 )

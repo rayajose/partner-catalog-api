@@ -110,13 +110,6 @@ The response includes pagination metadata to support client-side paging and navi
 
 ---
 
-### Pagination Behavior
-
-* Results are returned in the order they were created
-* Use `offset` to skip items
-* Use `limit` to control page size
-
-
 ### Response (200)
 
 ```json
@@ -140,6 +133,12 @@ The response includes pagination metadata to support client-side paging and navi
   "offset": 0
 }
 ```
+### Pagination Behavior
+
+* Results are returned in the order they were created
+* Use `offset` to skip items
+* Use `limit` to control page size
+
 
 ### Errors
 
@@ -157,6 +156,13 @@ Retrieves details for a specific feed.
 ### Path Parameters
 
 * `feed_id` *(string, required)* — Unique identifier for the feed
+
+### Example Request
+
+```bash
+curl -X GET http://127.0.0.1:8000/feeds/f_1 \
+  -H "Accept: application/json"
+```
 
 ### Response (200)
 
