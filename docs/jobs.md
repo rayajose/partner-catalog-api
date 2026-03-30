@@ -55,7 +55,7 @@ curl "http://127.0.0.1:8000/jobs/j_2"
 ```json
 {
   "error_code": "JOB_NOT_FOUND",
-  "message": "Job J_999 not found",
+  "message": "Job j_999 not found",
   "details": {
     "job_id": "j_999"
   }
