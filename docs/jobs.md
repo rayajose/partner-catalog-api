@@ -1,39 +1,73 @@
-# Jobs
+# Jobs API
+
+Jobs represent background processing tasks such as feed submission and validation.
+
+---
 
 ## GET /jobs/{job_id}
+
 Returns the current status and details of a processing job.
 
 ### Path Parameters
 
 * `job_id` *(string, required)* — Unique identifier for the job
 
+---
+
 ### Example Request
 
-```
-POST /jobs/j_1
+```bash
+curl "http://127.0.0.1:8000/jobs/j_2"
 ```
 
-### Response (200)
+---
+
+### Example Response
 
 ```json
 {
-  "job_id": "j_1",
+  "job_id": "j_2",
   "feed_id": "f_1",
-  "status": "queued",
-  "job_type": "feed_submission"
+  "status": "running",
+  "job_type": "validation"
 }
 ```
 
-### Status values
-A job moves through the following states:
-- queued
-- running
-- completed
-- failed
+---
 
-### Behavior
+### Response Fields
 
-- `queued` → created but not yet started  
-- `running` → actively processing  
-- `completed` → successfully finished  
-- `failed` → terminated with error  
+* `job_id` *(string)* — Unique job identifier
+* `feed_id` *(string)* — Associated feed
+* `status` *(string)* — Current job status
+* `job_type` *(string)* — Type of job
+
+---
+
+### Errors
+
+| Status | Description   |
+|--------|---------------|
+| 404    | Job not found |
+
+### Example Not Found Response
+
+```json
+{
+  "error_code": "JOB_NOT_FOUND",
+  "message": "Job J_999 not found",
+  "details": {
+    "job_id": "j_999"
+  }
+}
+```
+---
+
+## Job Status Values
+
+| Status    | Description                    |
+|-----------|--------------------------------|
+| queued    | Job is waiting to be processed |
+| running   | Job is currently executing     |
+| completed | Job completed successfully     |
+| failed    | Job failed                     |

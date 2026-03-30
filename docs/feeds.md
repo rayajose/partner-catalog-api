@@ -1,10 +1,8 @@
-# Feeds
+# Feeds API
 
-Represents a partner-submitted product data file. Each feed goes through a lifecycle:
+Feeds represent partner-submitted product data files. A feed moves through the lifecycle:
 
 `uploaded → validating → validated → failed`
-
-See [Feed resource](resources.md#feed) for full field definitions.
 
 ---
 
@@ -12,47 +10,42 @@ See [Feed resource](resources.md#feed) for full field definitions.
 
 Submits a partner product feed and creates an associated processing job.
 
----
-### Fields
-
-* `partner_name` *(string, required)* — Name of the submitting partner
-* `file_name` *(string, required)* — Name of the uploaded file
-* `submitted_by` *(string, required, email)* — Email address of the user or system submitting the feed
-* `notes` *(string, optional)* — Additional context or comments
-
----
-
-### Validation
-
-* `submitted_by` must be a valid email address
-* Invalid values will return a `422 Unprocessable Entity` response
-
----
 ### Request Body
 
 ```json
 {
   "partner_name": "Acme Corp",
   "file_name": "products.csv",
-  "submitted_by": "user@acmecorp.com",
+  "submitted_by": "user@example.com",
   "notes": "Initial upload"
 }
 ```
+
+### Fields
+
+* `partner_name` *(string, required)* — Name of the submitting partner
+* `file_name` *(string, required)* — Name of the uploaded file
+* `submitted_by` *(string, required, email)* — Email address of the submitter
+* `notes` *(string, optional)* — Additional context or comments
+
+---
+
 ### Example Request
 
 ```bash
-curl -X POST http://127.0.0.1:8000/feeds \
+curl -X POST "http://127.0.0.1:8000/feeds" \
   -H "Content-Type: application/json" \
   -d '{
     "partner_name": "Acme Corp",
     "file_name": "products.csv",
-    "submitted_by": "user@acmecorp.com"
+    "submitted_by": "user@example.com",
+    "notes": "Initial upload"
   }'
 ```
 
 ---
 
-### Response (200)
+### Example Response
 
 ```json
 {
@@ -66,12 +59,26 @@ curl -X POST http://127.0.0.1:8000/feeds \
 
 ### Errors
 
-| Status | Description                                   |
-| ------ | --------------------------------------------- |
-| 400    | Invalid request body                          |
-| 422    | Validation error (e.g., invalid email format) |
+| Status | Description      |
+|--------|------------------|
+| 422    | Validation error |
 
-See [Errors](errors.md) for error format.
+### Example Validation Error
+
+If `submitted_by` is not a valid email address, FastAPI returns a validation error response.
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "submitted_by"],
+      "msg": "value is not a valid email address",
+      "type": "value_error"
+    }
+  ]
+}
+```
+---
 
 ## GET /feeds
 
@@ -79,75 +86,56 @@ Returns a paginated list of feeds with optional filtering by status.
 
 ### Query Parameters
 
-* `status` *(optional)* — Filter by feed status
-* `limit` *(integer, optional, default: 10)* — Max number of results
-* `offset` *(integer, optional, default: 0)* — Number of results to skip
+* `status` *(string, optional)* — Filter by feed status
+* `limit` *(integer, optional, default: 10)* — Maximum number of items
+* `offset` *(integer, optional, default: 0)* — Number of items to skip
 
-### Example requests
+---
 
-```bash
-curl "http://127.0.0.1:8000/feeds"
-```
-
-```bash
-curl "http://127.0.0.1:8000/feeds?status=uploaded"
-```
+### Example Request
 
 ```bash
 curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
 ```
 
-
-
-The response includes pagination metadata to support client-side paging and navigation.
-
-### Response Fields
-
-* `items` *(array of Feed)* — List of feed objects
-* `total` *(integer)* — Total number of matching feeds (before pagination)
-* `limit` *(integer)* — Maximum number of items returned
-* `offset` *(integer)* — Number of items skipped
-
 ---
 
-### Response (200)
+### Example Response
 
 ```json
-{ 
- "items": [
-  {
-    "feed_id": "f_1",
-    "partner_name": "Acme Corp",
-    "file_name": "products.csv",
-    "status": "uploaded"
-  },
-  {
-      "feed_id": "f_2",
-      "partner_name": "AnyCompany",
-      "file_name": "products.xml",
+{
+  "items": [
+    {
+      "feed_id": "f_1",
+      "partner_name": "Acme Corp",
+      "file_name": "products.csv",
       "status": "uploaded"
     }
   ],
-  "total": 2,
-  "limit": 10,
+  "total": 1,
+  "limit": 2,
   "offset": 0
 }
 ```
-### Pagination Behavior
 
-* Results are returned in the order they were created
-* Use `offset` to skip items
-* Use `limit` to control page size
+---
 
+### Response Fields
+
+* `items` *(array)* — List of feed objects
+* `total` *(integer)* — Total number of matching feeds
+* `limit` *(integer)* — Maximum number returned
+* `offset` *(integer)* — Number skipped
+
+---
 
 ### Errors
 
 | Status | Description              |
-| ------ | ------------------------ |
+|--------|--------------------------|
 | 400    | Invalid query parameters |
 
 ---
-See [Errors](errors.md) for error format.
 
 ## GET /feeds/{feed_id}
 
@@ -157,64 +145,67 @@ Retrieves details for a specific feed.
 
 * `feed_id` *(string, required)* — Unique identifier for the feed
 
+---
+
 ### Example Request
 
 ```bash
-curl -X GET http://127.0.0.1:8000/feeds/f_1 \
-  -H "Accept: application/json"
+curl "http://127.0.0.1:8000/feeds/f_1"
 ```
 
-### Response (200)
+---
 
-```json
-[
-  {
-    "feed_id": "f_1",
-    "partner_name": "Acme Corp",
-    "file_name": "products.csv",
-    "status": "uploaded"
-  }
-]
-```
-
-### Errors
-
-| Status | Description    |
-| ------ | -------------- |
-| 404    | Feed not found |
-
-See [Errors](errors.md) for error format.
-
-#### Example Error
+### Example Response
 
 ```json
 {
-  "error_code": "FEED_NOT_FOUND",
-  "message": "Feed f_1 not found",
-  "details": {
-    "feed_id": "f_1"
-  }
+  "feed_id": "f_1",
+  "partner_name": "Acme Corp",
+  "file_name": "products.csv",
+  "status": "uploaded"
 }
 ```
 
 ---
 
+### Errors
+
+| Status | Description    |
+|--------|----------------|
+| 404    | Feed not found |
+
+### Example Not Found Response
+
+```json
+{
+  "error_code": "FEED_NOT_FOUND",
+  "message": "Feed f_999 not found",
+  "details": {
+    "feed_id": "f_999"
+  }
+}
+```
+---
+
 ## POST /feeds/{feed_id}/validate
 
-Creates a validation job for the specified feed and updates the feed status to validating.
+Creates a validation job for the specified feed and updates the feed status to `validating`.
 
 ### Path Parameters
 
 * `feed_id` *(string, required)* — Unique identifier for the feed
 
+---
+
 ### Example Request
 
 ```bash
-curl -X POST http://127.0.0.1:8000/feeds/f_1/validate \
-  -H "Content-Type: application/json"
+curl -X POST "http://127.0.0.1:8000/feeds/f_1/validate"
 ```
 
-### Response (200)
+---
+
+### Example Response
 
 ```json
 {
@@ -225,44 +216,32 @@ curl -X POST http://127.0.0.1:8000/feeds/f_1/validate \
 }
 ```
 
-### Behavior
-
-* Creates a validation job
-* Updates feed status to `validating`
-* Validation runs asynchronously
+---
 
 ### Errors
 
-| Status | Description                             |
-| ------ | --------------------------------------- |
-| 404    | Feed not found                          |
-| 409    | Feed is already validating or processed |
+| Status | Description    |
+|--------|----------------|
+| 404    | Feed not found |
 
----
-See [Errors](errors.md) for error format.
+### Example Not Found Response
 
-## Feed Lifecycle
-
-Feeds move through the following states:
-
-| Status     | Description               |
-| ---------- | ------------------------- |
-| uploaded   | Feed has been submitted   |
-| validating | Validation is in progress |
-| validated  | Feed passed validation    |
-| failed     | Feed failed validation    |
-
+```json
+{
+  "error_code": "FEED_NOT_FOUND",
+  "message": "Feed f_999 not found",
+  "details": {
+    "feed_id": "f_999"
+  }
+}
+```
 ---
 
-## Workflow Example
+## Feed Status Values
 
-### Submit and validate a feed
-
-1. Create a feed
-   `POST /feeds`
-
-2. Start validation
-   `POST /feeds/{feed_id}/validate`
-
-3. Check job status
-   `GET /jobs/{job_id}`
+| Status     | Description             |
+|------------|-------------------------|
+| uploaded   | Feed has been submitted |
+| validating | Validation in progress  |
+| validated  | Feed passed validation  |
+| failed     | Feed failed validation  |
