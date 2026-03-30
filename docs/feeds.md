@@ -131,10 +131,23 @@ curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
 
 ### Errors
 
-| Status | Description              |
-|--------|--------------------------|
-| 400    | Invalid query parameters |
+| Status | Description      |
+|--------|------------------|
+| 422    | Validation error |
 
+### Example Validation Error
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["query", "offset"],
+      "msg": "value is not a valid integer",
+      "type": "type_error.integer"
+    }
+  ]
+}
+```
 ---
 
 ## GET /feeds/{feed_id}
