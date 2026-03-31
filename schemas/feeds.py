@@ -19,6 +19,18 @@ class FeedCreateResponse(BaseModel):
     status: FeedStatus
     job_id: str
 
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "feed_id": "FD-1",
+                    "status": "uploaded",
+                    "job_id": "SJ-1"
+                }
+            ]
+        }
+    }
+
 class FeedResponse(BaseModel):
     feed_id: str
     partner_name: str
