@@ -23,10 +23,10 @@ job_counter["value"] += 1
 @router.post("/feeds", response_model=FeedCreateResponse, summary="Create a new feed",
 description="Submits a partner product feed and creates an associated processing job.")
 def create_feed(feed: FeedCreateRequest):
-    feed_id = f"f_{feed_counter['value']}"
+    feed_id = f"FD-{feed_counter['value']}"
     feed_counter["value"] += 1
 
-    job_id = f"j_{job_counter['value']}"
+    job_id = f"SJ-{job_counter['value']}"
     job_counter["value"] += 1
 
     feeds[feed_id] = {
@@ -80,7 +80,7 @@ def validate_feed(feed_id: str):
             },
         )
 
-    job_id = f"j_{job_counter['value']}"
+    job_id = f"VJ-{job_counter['value']}"
     job_counter["value"] += 1
 
     jobs[job_id] = {

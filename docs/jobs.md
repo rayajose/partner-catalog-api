@@ -17,7 +17,7 @@ Returns the current status and details of a processing job.
 ### Example Request
 
 ```bash
-curl "http://127.0.0.1:8000/jobs/j_2"
+curl "http://127.0.0.1:8000/jobs/VJ-1"
 ```
 
 ---
@@ -26,8 +26,8 @@ curl "http://127.0.0.1:8000/jobs/j_2"
 
 ```json
 {
-  "job_id": "j_2",
-  "feed_id": "f_1",
+  "job_id": "VJ-1",
+  "feed_id": "FD-1",
   "status": "running",
   "job_type": "validation"
 }
@@ -55,9 +55,9 @@ curl "http://127.0.0.1:8000/jobs/j_2"
 ```json
 {
   "error_code": "JOB_NOT_FOUND",
-  "message": "Job j_999 not found",
+  "message": "Job VJ-999 not found",
   "details": {
-    "job_id": "j_999"
+    "job_id": "VJ-999"
   }
 }
 ```

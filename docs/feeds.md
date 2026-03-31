@@ -49,9 +49,9 @@ curl -X POST "http://127.0.0.1:8000/feeds" \
 
 ```json
 {
-  "feed_id": "f_1",
+  "feed_id": "FD-1",
   "status": "uploaded",
-  "job_id": "j_1"
+  "job_id": "SJ-1"
 }
 ```
 
@@ -106,7 +106,7 @@ curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
 {
   "items": [
     {
-      "feed_id": "f_1",
+      "feed_id": "FD-1",
       "partner_name": "Acme Corp",
       "file_name": "products.csv",
       "status": "uploaded"
@@ -163,7 +163,7 @@ Retrieves details for a specific feed.
 ### Example Request
 
 ```bash
-curl "http://127.0.0.1:8000/feeds/f_1"
+curl "http://127.0.0.1:8000/feeds/FD-1"
 ```
 
 ---
@@ -172,7 +172,7 @@ curl "http://127.0.0.1:8000/feeds/f_1"
 
 ```json
 {
-  "feed_id": "f_1",
+  "feed_id": "FD-1",
   "partner_name": "Acme Corp",
   "file_name": "products.csv",
   "status": "uploaded"
@@ -192,9 +192,9 @@ curl "http://127.0.0.1:8000/feeds/f_1"
 ```json
 {
   "error_code": "FEED_NOT_FOUND",
-  "message": "Feed f_999 not found",
+  "message": "Feed FD-999 not found",
   "details": {
-    "feed_id": "f_999"
+    "feed_id": "FD-999"
   }
 }
 ```
@@ -213,7 +213,7 @@ Creates a validation job for the specified feed and updates the feed status to `
 ### Example Request
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/feeds/f_1/validate"
+curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate"
 ```
 
 ---
@@ -223,8 +223,8 @@ curl -X POST "http://127.0.0.1:8000/feeds/f_1/validate"
 ```json
 {
   "message": "Validation started",
-  "feed_id": "f_1",
-  "job_id": "j_1",
+  "feed_id": "FD-1",
+  "job_id": "VJ-1",
   "status": "validating"
 }
 ```
@@ -242,9 +242,9 @@ curl -X POST "http://127.0.0.1:8000/feeds/f_1/validate"
 ```json
 {
   "error_code": "FEED_NOT_FOUND",
-  "message": "Feed f_999 not found",
+  "message": "Feed FD-999 not found",
   "details": {
-    "feed_id": "f_999"
+    "feed_id": "FD-999"
   }
 }
 ```

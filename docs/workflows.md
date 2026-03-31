@@ -25,9 +25,9 @@ Example response:
 
 ```json
 {
-  "feed_id": "f_1",
+  "feed_id": "FD-1",
   "status": "uploaded",
-  "job_id": "j_1"
+  "job_id": "SJ-1"
 }
 ```
 
@@ -36,7 +36,7 @@ Example response:
 ### Step 2 — Start validation
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/feeds/f_1/validate"
+curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate"
 ```
 
 Example response:
@@ -44,8 +44,8 @@ Example response:
 ```json
 {
   "message": "Validation started",
-  "feed_id": "f_1",
-  "job_id": "j_1",
+  "feed_id": "FD-1",
+  "job_id": "VJ-1",
   "status": "validating"
 }
 ```
@@ -55,15 +55,15 @@ Example response:
 ### Step 3 — Check job status
 
 ```bash
-curl "http://127.0.0.1:8000/jobs/j_1"
+curl "http://127.0.0.1:8000/jobs/VJ-1"
 ```
 
 Example response:
 
 ```json
 {
-  "job_id": "j_1",
-  "feed_id": "f_1",
+  "job_id": "VJ-1",
+  "feed_id": "FD-1",
   "status": "running",
   "job_type": "validation"
 }
@@ -89,14 +89,14 @@ The following endpoints are useful for retrieving and filtering feed data but ar
 ### Retrieve a specific feed
 
 ```bash
-curl "http://127.0.0.1:8000/feeds/f_1"
+curl "http://127.0.0.1:8000/feeds/FD-1"
 ```
 
 Example response:
 
 ```json
 {
-  "feed_id": "f_1",
+  "feed_id": "FD-1",
   "partner_name": "Acme Corp",
   "file_name": "products.csv",
   "status": "uploaded"
@@ -117,7 +117,7 @@ Example response:
 {
   "items": [
     {
-      "feed_id": "f_1",
+      "feed_id": "FD-1",
       "partner_name": "Acme Corp",
       "file_name": "products.csv",
       "status": "uploaded"
