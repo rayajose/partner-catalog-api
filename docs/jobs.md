@@ -17,7 +17,8 @@ Returns the current status and details of a processing job.
 ### Example Request
 
 ```bash
-curl "http://127.0.0.1:8000/jobs/VJ-1"
+curl "http://127.0.0.1:8000/jobs/VJ-1" \
+  -H "X-API-Key: demo-secret-key"
 ```
 
 ---
@@ -46,9 +47,11 @@ curl "http://127.0.0.1:8000/jobs/VJ-1"
 
 ### Errors
 
-| Status | Description   |
-|--------|---------------|
-| 404    | Job not found |
+| Status | Description     |
+|--------|-----------------|
+| 401    | Missing API key |
+| 403    | Invalid API key |
+| 404    | Job not found   |
 
 ### Example Not Found Response
 

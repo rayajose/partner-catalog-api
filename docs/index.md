@@ -30,6 +30,13 @@ http://127.0.0.1:8000
 ```
 http://127.0.0.1:8000/docs
 ```
+## Authentication
+
+This API uses a header-based API key.
+
+Include the following header in requests:
+
+`X-API-Key: demo-secret-key`
 
 ---
 

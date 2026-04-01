@@ -1,10 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from schemas.common import ErrorResponse
 from schemas.jobs import JobResponse
 
-router = APIRouter(tags=["Jobs"])
+from security import require_api_key
+
+router = APIRouter(
+    tags=["Jobs"],
+    dependencies=[Depends(require_api_key)]
+)
 
 from store import jobs
 

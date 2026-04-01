@@ -34,6 +34,7 @@ Submits a partner product feed and creates an associated processing job.
 
 ```bash
 curl -X POST "http://127.0.0.1:8000/feeds" \
+  -H "X-API-Key: demo-secret-key" \
   -H "Content-Type: application/json" \
   -d '{
     "partner_name": "Acme Corp",
@@ -61,6 +62,8 @@ curl -X POST "http://127.0.0.1:8000/feeds" \
 
 | Status | Description      |
 |--------|------------------|
+| 401    | Missing API key  |
+| 403    | Invalid API key  |
 | 422    | Validation error |
 
 ### Example Validation Error
@@ -95,7 +98,8 @@ Returns a paginated list of feeds with optional filtering by status.
 ### Example Request
 
 ```bash
-curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
+curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0" \
+  -H "X-API-Key: demo-secret-key"
 ```
 
 ---
@@ -133,6 +137,8 @@ curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
 
 | Status | Description      |
 |--------|------------------|
+| 401    | Missing API key  |
+| 403    | Invalid API key  |
 | 422    | Validation error |
 
 ### Example Validation Error
@@ -163,7 +169,8 @@ Retrieves details for a specific feed.
 ### Example Request
 
 ```bash
-curl "http://127.0.0.1:8000/feeds/FD-1"
+curl "http://127.0.0.1:8000/feeds/FD-1" \
+  -H "X-API-Key: demo-secret-key"
 ```
 
 ---
@@ -183,9 +190,11 @@ curl "http://127.0.0.1:8000/feeds/FD-1"
 
 ### Errors
 
-| Status | Description    |
-|--------|----------------|
-| 404    | Feed not found |
+| Status | Description     |
+|--------|-----------------|
+| 401    | Missing API key |
+| 403    | Invalid API key |
+| 404    | Feed not found  |
 
 ### Example Not Found Response
 
@@ -213,7 +222,8 @@ Creates a validation job for the specified feed and updates the feed status to `
 ### Example Request
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate"
+curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate" \
+  -H "X-API-Key: demo-secret-key"
 ```
 
 ---
@@ -233,9 +243,11 @@ curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate"
 
 ### Errors
 
-| Status | Description    |
-|--------|----------------|
-| 404    | Feed not found |
+| Status | Description     |
+|--------|-----------------|
+| 401    | Missing API key |
+| 403    | Invalid API key |
+| 404    | Feed not found  |
 
 ### Example Not Found Response
 

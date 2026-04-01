@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from schemas.common import ErrorResponse
@@ -12,7 +12,12 @@ from schemas.feeds import (
 from schemas.jobs import JobStatus
 from store import feeds, jobs, feed_counter, job_counter
 
-router = APIRouter(tags=["Feeds"])
+from security import require_api_key
+
+router = APIRouter(
+    tags=["Feeds"],
+    dependencies=[Depends(require_api_key)]
+)
 
 feed_id = f"f_{feed_counter['value']}"
 feed_counter["value"] += 1

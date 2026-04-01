@@ -29,29 +29,6 @@ Some endpoints return a custom JSON error payload for application-specific failu
 * `message` *(string)* — Human-readable summary
 * `details` *(object, optional)* — Additional context for debugging or client handling
 
-### Example: Feed not found
-
-```json
-{
-  "error_code": "FEED_NOT_FOUND",
-  "message": "Feed f_999 not found",
-  "details": {
-    "feed_id": "f_999"
-  }
-}
-```
-
-### Example: Job not found
-
-```json
-{
-  "error_code": "JOB_NOT_FOUND",
-  "message": "Job j_999 not found",
-  "details": {
-    "job_id": "j_999"
-  }
-}
-```
 
 ---
 
@@ -107,11 +84,98 @@ This commonly occurs when:
 | Status | Meaning                             |
 |--------|-------------------------------------|
 | 200    | Request completed successfully      |
+| 401    | Missing API key                     |
+| 403    | Invalid API key                     |
 | 404    | Requested feed or job was not found |
 | 422    | Request validation failed           |
 
 ---
 
+
+### 401 Unauthorized
+
+Returned when the API key is missing from the request.
+
+#### Example Response
+
+```json
+{
+  "detail": "Not authenticated"
+}
+```
+
+### 403 Forbidden
+
+
+
+Returned when the API key is provided but invalid.
+
+#### Example Response
+
+```json
+{
+  "detail": "Invalid or missing API key"
+}
+```
+
+### 404 Not Found
+
+Returned when a requested resource does not exist.
+
+#### Example: Feed not found
+
+```json
+{
+  "error_code": "FEED_NOT_FOUND",
+  "message": "Feed f_999 not found",
+  "details": {
+    "feed_id": "f_999"
+  }
+}
+```
+
+#### Example: Job not found
+
+```json
+{
+  "error_code": "JOB_NOT_FOUND",
+  "message": "Job j_999 not found",
+  "details": {
+    "job_id": "j_999"
+  }
+}
+```
+### 422 Validation Error
+
+Returned when request data fails validation.
+
+#### Example: Invalid email
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "submitted_by"],
+      "msg": "value is not a valid email address",
+      "type": "value_error"
+    }
+  ]
+}
+```
+#### Example: Invalid query parameter
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["query", "offset"],
+      "msg": "value is not a valid integer",
+      "type": "type_error.integer"
+    }
+  ]
+}
+}
+```
 ## Notes
 
 * Resource-not-found responses currently use the custom application error format.
