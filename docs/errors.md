@@ -63,20 +63,6 @@ This commonly occurs when:
 * `msg` *(string)* — Human-readable validation message
 * `type` *(string)* — Validation error type
 
-### Example: Invalid email address
-
-```json
-{
-  "detail": [
-    {
-      "loc": ["body", "submitted_by"],
-      "msg": "value is not a valid email address",
-      "type": "value_error"
-    }
-  ]
-}
-```
-
 ---
 
 ## Common Status Codes
