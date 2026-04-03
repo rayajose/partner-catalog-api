@@ -74,3 +74,10 @@ curl "http://127.0.0.1:8000/jobs/VJ-1" \
 | running   | Job is currently executing     |
 | completed | Job completed successfully     |
 | failed    | Job failed                     |
+
+## Job ID Format
+
+Job IDs are prefixed by job type: (PLACEHOLDER FOR LATER UPDATE)
+
+- `sj_<number>` — feed submission job
+- `vj_<number>` — feed validation job
