@@ -14,6 +14,12 @@ class FeedCreateRequest(BaseModel):
     submitted_by: EmailStr
     notes: Optional[str] = None
 
+class FeedResponse(BaseModel):
+    feed_id: str
+    partner_name: str
+    file_name: str
+    status: FeedStatus
+
 class FeedCreateResponse(BaseModel):
     feed_id: str
     status: FeedStatus
@@ -23,19 +29,15 @@ class FeedCreateResponse(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "feed_id": "FD-1",
+                    "feed_id": "FD001",
                     "status": "uploaded",
-                    "job_id": "SJ-1"
+                    "job_id": "JS001"
                 }
             ]
         }
     }
 
-class FeedResponse(BaseModel):
-    feed_id: str
-    partner_name: str
-    file_name: str
-    status: FeedStatus
+
 
 class FeedListResponse(BaseModel):
     items: list[FeedResponse]

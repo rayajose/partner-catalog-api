@@ -9,7 +9,6 @@ api_key_header = APIKeyHeader(
     description="API key required to access this API."
 )
 
-
 def require_api_key(
     api_key: str = Depends(api_key_header),
     settings: Settings = Depends(get_settings),

@@ -113,9 +113,9 @@ Returned when a requested resource does not exist.
 ```json
 {
   "error_code": "FEED_NOT_FOUND",
-  "message": "Feed f_999 not found",
+  "message": "Feed FD-1 not found",
   "details": {
-    "feed_id": "f_999"
+    "feed_id": "FD-1"
   }
 }
 ```
@@ -125,9 +125,9 @@ Returned when a requested resource does not exist.
 ```json
 {
   "error_code": "JOB_NOT_FOUND",
-  "message": "Job j_999 not found",
+  "message": "Job SJ-1 not found",
   "details": {
-    "job_id": "j_999"
+    "job_id": "SJ-1"
   }
 }
 ```

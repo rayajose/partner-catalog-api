@@ -133,10 +133,10 @@ Example response:
 
 ## Notes
 
-* Feed IDs use the format `FD-<number>`
+* Feed IDs use the format `FD<number>`
 * Job IDs use the following format
-    * Feed submission: `SJ-<number>`
-    * Feed validation: `VJ-<number>`
+    * Feed submission: `JS<number>`
+    * Feed validation: `JV<number>`
 * This API uses in-memory storage; data resets when the application restarts
 
 ---

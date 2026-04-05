@@ -17,7 +17,7 @@ Returns the current status and details of a processing job.
 ### Example Request
 
 ```bash
-curl "http://127.0.0.1:8000/jobs/VJ-1" \
+curl "http://127.0.0.1:8000/jobs/JV001" \
   -H "X-API-Key: demo-secret-key"
 ```
 
@@ -27,8 +27,8 @@ curl "http://127.0.0.1:8000/jobs/VJ-1" \
 
 ```json
 {
-  "job_id": "VJ-1",
-  "feed_id": "FD-1",
+  "job_id": "JV001",
+  "feed_id": "FD001",
   "status": "running",
   "job_type": "validation"
 }
@@ -58,9 +58,9 @@ curl "http://127.0.0.1:8000/jobs/VJ-1" \
 ```json
 {
   "error_code": "JOB_NOT_FOUND",
-  "message": "Job VJ-999 not found",
+  "message": "Job JV001 not found",
   "details": {
-    "job_id": "VJ-999"
+    "job_id": "JV001"
   }
 }
 ```
@@ -79,5 +79,5 @@ curl "http://127.0.0.1:8000/jobs/VJ-1" \
 
 Job IDs are prefixed by job type: (PLACEHOLDER FOR LATER UPDATE)
 
-- `sj_<number>` — feed submission job
-- `vj_<number>` — feed validation job
+- `JS<number>` — feed submission job
+- `JV<number>` — feed validation job

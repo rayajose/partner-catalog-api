@@ -50,9 +50,9 @@ curl -X POST "http://127.0.0.1:8000/feeds" \
 
 ```json
 {
-  "feed_id": "FD-1",
+  "feed_id": "FD001",
   "status": "uploaded",
-  "job_id": "SJ-1"
+  "job_id": "JS001"
 }
 ```
 
@@ -110,7 +110,7 @@ curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0" \
 {
   "items": [
     {
-      "feed_id": "FD-1",
+      "feed_id": "FD001",
       "partner_name": "Acme Corp",
       "file_name": "products.csv",
       "status": "uploaded"
@@ -179,7 +179,7 @@ curl "http://127.0.0.1:8000/feeds/FD-1" \
 
 ```json
 {
-  "feed_id": "FD-1",
+  "feed_id": "FD001",
   "partner_name": "Acme Corp",
   "file_name": "products.csv",
   "status": "uploaded"
@@ -201,9 +201,9 @@ curl "http://127.0.0.1:8000/feeds/FD-1" \
 ```json
 {
   "error_code": "FEED_NOT_FOUND",
-  "message": "Feed FD-999 not found",
+  "message": "Feed FD001 not found",
   "details": {
-    "feed_id": "FD-999"
+    "feed_id": "FD001"
   }
 }
 ```
@@ -233,8 +233,8 @@ curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate" \
 ```json
 {
   "message": "Validation started",
-  "feed_id": "FD-1",
-  "job_id": "VJ-1",
+  "feed_id": "FD001",
+  "job_id": "JV001",
   "status": "validating"
 }
 ```
@@ -254,9 +254,9 @@ curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate" \
 ```json
 {
   "error_code": "FEED_NOT_FOUND",
-  "message": "Feed FD-999 not found",
+  "message": "Feed FD001 not found",
   "details": {
-    "feed_id": "FD-999"
+    "feed_id": "FD001"
   }
 }
 ```
