@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from routers import feeds, jobs
+from db import init_db
 
 tags_metadata = [
     {
@@ -21,6 +22,8 @@ app = FastAPI(
     version="0.1.0",
     openapi_tags=tags_metadata,
 )
+
+init_db()
 
 app.include_router(feeds.router)
 app.include_router(jobs.router)

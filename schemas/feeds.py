@@ -8,17 +8,14 @@ class FeedStatus(str, Enum):
     validated = "validated"
     failed = "failed"
 
-class FeedCreateRequest(BaseModel):
-    partner_name: str
-    file_name: str
-    submitted_by: EmailStr
-    notes: Optional[str] = None
-
 class FeedResponse(BaseModel):
     feed_id: str
     partner_name: str
     file_name: str
+    content_type: str
+    uploaded_at: str
     status: FeedStatus
+    validation_job_id: Optional[str] = None
 
 class FeedCreateResponse(BaseModel):
     feed_id: str

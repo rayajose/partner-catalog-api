@@ -1,139 +1,37 @@
-from typing import Optional
+from __future__ import annotations
+import csv
+import io
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status
-from fastapi.responses import JSONResponse
 from schemas.common import ErrorResponse
-from schemas.feeds import (
-    FeedCreateRequest,
-    FeedCreateResponse,
-    FeedResponse,
-    FeedStatus,
-    FeedListResponse)
-from schemas.jobs import JobStatus
+from schemas.feeds import FeedResponse
 from data.stores import (
-    feeds,
-    jobs,
-    uploads,
+    create_feed,
+    create_job,
+    get_feed,
+    map_feed_to_response,
     next_feed_id,
-    next_submit_job_id,
-    next_validate_job_id,
-    #next_product_id,
-    utc_now_iso)
-
+    next_submission_job_id,
+    next_validation_job_id,
+    utc_now_iso
+)
 from security import require_api_key
 
 router = APIRouter(
+    prefix="/feeds",
     tags=["Feeds"],
     dependencies=[Depends(require_api_key)]
 )
-
-@router.post("/feeds",
-             response_model=FeedCreateResponse,
-             summary="Create a new feed",
-             description="Submits a partner product feed and creates an associated processing job.")
-def create_feed(feed: FeedCreateRequest):
-
-    feed_id = next_feed_id()
-    job_id = next_submit_job_id()
-
-    feeds[feed_id] = {
-        "feed_id": feed_id,
-        "partner_name": feed.partner_name,
-        "file_name": feed.file_name,
-        "status": FeedStatus.uploaded,
-    }
-
-    jobs[job_id] = {
-        "job_id": job_id,
-        "feed_id": feed_id,
-        "status": JobStatus.queued,
-        "job_type": "feed_submission",
-    }
-
-    return {
-        "feed_id": feed_id,
-        "status": FeedStatus.uploaded,
-        "job_id": job_id,
-    }
-
-@router.get("/feeds",
-            response_model=FeedListResponse,
-            summary="List feeds",
-            description="Returns a paginated list of feeds with optional filtering by status.")
-def list_feeds(feed_status: Optional[FeedStatus] = None, limit: int = 10, offset: int = 0):
-    all_feeds = list(feeds.values())
-
-    if feed_status:
-        all_feeds = [f for f in all_feeds if f["status"] == feed_status]
-
-    result = all_feeds[offset:offset + limit]
-
-    return {
-        "items": result,
-        "total": len(all_feeds),
-        "limit": limit,
-        "offset": offset
-    }
-@router.get("/feeds/{feed_id}",
-    response_model=FeedResponse,
-    responses={404: {"model": ErrorResponse, "description": "Feed not found"}},
-    summary="Get feed by ID",
-    description="Retrieves details for a specific feed."
+@router.post(
+    "/upload",
+    status_code=status.HTTP_201_CREATED,
+    summary="Upload a feed",
+    description="Uploads a product feed into the system"
 )
-def get_feed(feed_id: str):
-    feed = feeds.get(feed_id)
-    if not feed:
-        return JSONResponse(
-            status_code=404,
-            content={
-                "error_code": "FEED_NOT_FOUND",
-                "message": f"Feed {feed_id} not found",
-                "details": {"feed_id": feed_id},
-            },
-        )
-    return feed
-
-@router.post("/feeds/{feed_id}/validate",
-    summary="Start feed validation",
-    description="Creates a validation job for the specified feed and updates the feed status to validating.")
-def validate_feed(feed_id: str):
-    if feed_id not in feeds:
-        return JSONResponse(
-            status_code=404,
-            content={
-                "error_code": "FEED_NOT_FOUND",
-                "message": f"Feed {feed_id} not found",
-                "details": {"feed_id": feed_id},
-            },
-        )
-
-    job_id = next_validate_job_id()
-
-    jobs[job_id] = {
-        "job_id": job_id,
-        "feed_id": feed_id,
-        "status": JobStatus.running,
-        "job_type": "validation",
-    }
-
-    feeds[feed_id]["status"] = FeedStatus.validating
-
-    return {
-        "message": "Validation started",
-        "feed_id": feed_id,
-        "job_id": job_id,
-        "status": FeedStatus.validating,
-    }
-
-@router.post("/feeds/upload",
-             status_code=status.HTTP_201_CREATED,
-             summary="Upload a feed",
-             description="Uploads a product feed into the system"
-             )
 async def upload_feed(
     partner_name: str = Form(...),
     file: UploadFile = File(...)
 ):
-    allowed_types = {"text/csv", "text/txt","application/vnd.ms-excel"}
+    allowed_types = {"text/csv", "text/plain", "application/vnd.ms-excel"}
     if file.content_type not in allowed_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -147,24 +45,72 @@ async def upload_feed(
             detail="Uploaded file is empty."
         )
 
+    try:
+        decoded = content.decode("utf-8-sig")
+        reader = csv.DictReader(io.StringIO(decoded))
+        _ = list(reader)
+
+        if reader.fieldnames is None:
+            raise ValueError("CSV header row is missing.")
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid CSV file: {exc}"
+        )
+
     feed_id = next_feed_id()
+    submission_job_id = next_submission_job_id()
+    validation_job_id = next_validation_job_id()
+    now = utc_now_iso()
 
-    feeds[feed_id] = {
-        "feed_id": feed_id,
-        "partner_name": partner_name,
-        "filename": file.filename,
-        "content_type": file.content_type,
-        "status": "uploaded",
-        "uploaded_at": utc_now_iso(),
-        "file_size": len(content)
-    }
+    create_feed(
+        feed_id=feed_id,
+        partner_name=partner_name,
+        file_name=file.filename or "uploaded.csv",
+        content_type=file.content_type,
+        status="uploaded",
+        uploaded_at=now,
+        validation_job_id=validation_job_id,
+    )
 
-    uploads[feed_id] = content
+    create_job(
+        job_id=submission_job_id,
+        job_type="submission",
+        status="completed",
+        created_at=now,
+        feed_id=feed_id,
+        message="Feed upload accepted."
+    )
+
+    create_job(
+        job_id=validation_job_id,
+        job_type="validation",
+        status="completed",
+        created_at=now,
+        feed_id=feed_id,
+        message="CSV structure validation completed."
+    )
 
     return {
         "feed_id": feed_id,
+        "job_id": submission_job_id,
+        "status": "uploaded",
         "partner_name": partner_name,
-        "filename": file.filename,
-        "content_type": file.content_type,
-        "status": "uploaded"
+        "file_name": file.filename or "uploaded.csv"
     }
+
+@router.get("/{feed_id}",
+    response_model=FeedResponse,
+    responses={404: {"model": ErrorResponse, "description": "Feed not found"}},
+    summary="Get feed by ID",
+    description="Retrieves details for a specific feed."
+)
+async def read_feed(feed_id: str):
+    feed = get_feed(feed_id)
+    if not feed:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Feed {feed_id} not found."
+        )
+
+    return map_feed_to_response(feed)
