@@ -5,21 +5,22 @@ from db import init_db
 tags_metadata = [
     {
         "name": "Feeds",
-        "description": "Operations for submitting, retrieving, filtering, and validating partner product feeds."
+        "description": "Operations for uploading and retrieving partner product feeds."
     },
     {
         "name": "Jobs",
-        "description": "Operations for checking the status of background processing jobs."
+        "description": "Operations for checking submission and validation job status.."
     },
 ]
 
 app = FastAPI(
     title="Partner Catalog API",
     description=(
-        "A demo REST API for partner feed submission, validation, and job tracking. "
-        "This project demonstrates API design, schema modeling, and developer-focused documentation."
+        "A REST API for ingesting, validating, and tracking partner product feeds. "
+        "This project demonstrates API design, data modeling, persistence, "
+        "and developer-focused documentation."
     ),
-    version="0.1.0",
+    version="0.2.0",
     openapi_tags=tags_metadata,
 )
 
