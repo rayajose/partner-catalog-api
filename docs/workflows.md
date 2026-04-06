@@ -1,147 +1,156 @@
 # Workflows
 
-This section demonstrates how to use the API to submit a partner feed, start validation, and track processing status.
+This section demonstrates how to use the API to upload a partner feed, track processing jobs, and retrieve feed metadata.
 
 ---
 
-## Submit and Validate a Feed
+## 🔄 Submit and Process a Feed
 
-This workflow shows the typical sequence for processing a partner product feed.
+This workflow shows the typical sequence for ingesting a partner product feed.
 
-### Step 1 — Submit a feed
+---
+
+### Step 1 — Upload a feed
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/feeds" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "partner_name": "Acme Corp",
-    "file_name": "products.csv",
-    "submitted_by": "user@example.com",
-    "notes": "Initial upload"
-  }'
+curl -X POST "http://127.0.0.1:8000/feeds/upload" \
+  -H "x-api-key: demo-secret-key" \
+  -F "partner_name=Acme Corp" \
+  -F "file=@sample_catalog.csv"
 ```
 
-Example response:
+---
+
+### Example Response
 
 ```json
 {
-  "feed_id": "FD-1",
+  "feed_id": "FD001",
   "status": "uploaded",
-  "job_id": "SJ-1"
+  "job_id": "JS001"
 }
 ```
 
 ---
 
-### Step 2 — Start validation
+### What happens
+
+* The feed is stored in the system
+* A **submission job (JSxxx)** is created
+* A **validation job (JVxxx)** is created
+* Feed metadata is persisted in the database
+
+---
+
+### Step 2 — Check submission job
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate"
+curl -H "x-api-key: demo-secret-key" \
+  "http://127.0.0.1:8000/jobs/JS001"
 ```
 
-Example response:
+---
+
+### Example Response
 
 ```json
 {
-  "message": "Validation started",
-  "feed_id": "FD-1",
-  "job_id": "VJ-1",
-  "status": "validating"
+  "job_id": "JS001",
+  "job_type": "submission",
+  "status": "completed",
+  "created_at": "2026-04-06T14:17:27+00:00",
+  "feed_id": "FD001",
+  "message": "Feed upload accepted."
 }
 ```
 
 ---
 
-### Step 3 — Check job status
+### Step 3 — Check validation job
 
 ```bash
-curl "http://127.0.0.1:8000/jobs/VJ-1"
+curl -H "x-api-key: demo-secret-key" \
+  "http://127.0.0.1:8000/jobs/JV001"
 ```
 
-Example response:
+---
+
+### Example Response
 
 ```json
 {
-  "job_id": "VJ-1",
-  "feed_id": "FD-1",
-  "status": "running",
-  "job_type": "validation"
+  "job_id": "JV001",
+  "job_type": "validation",
+  "status": "completed",
+  "created_at": "2026-04-06T14:17:27+00:00",
+  "feed_id": "FD001",
+  "message": "CSV structure validation completed."
 }
 ```
 
 ---
 
-### Workflow Summary
-
-* A feed is submitted and assigned a `feed_id`
-* A job is created to process the feed
-* Validation is triggered via a separate endpoint
-* Job status can be checked using the Jobs API
-
----
-
-## Inspecting Feeds (Optional)
-
-The following endpoints are useful for retrieving and filtering feed data but are not required for the core workflow.
-
----
-
-### Retrieve a specific feed
+### Step 4 — Retrieve feed metadata
 
 ```bash
-curl "http://127.0.0.1:8000/feeds/FD-1"
+curl -H "x-api-key: demo-secret-key" \
+  "http://127.0.0.1:8000/feeds/FD001"
 ```
 
-Example response:
+---
+
+### Example Response
 
 ```json
 {
-  "feed_id": "FD-1",
+  "feed_id": "FD001",
   "partner_name": "Acme Corp",
-  "file_name": "products.csv",
-  "status": "uploaded"
+  "file_name": "sample_catalog.csv",
+  "content_type": "text/csv",
+  "status": "uploaded",
+  "uploaded_at": "2026-04-06T14:17:27+00:00",
+  "validation_job_id": "JV001"
 }
 ```
 
 ---
 
-### List feeds with filtering and pagination
+## 📊 Workflow Summary
 
-```bash
-curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0"
-```
+```text
+Upload Feed → Create Feed (FDxxx)
+            → Create Submission Job (JSxxx)
+            → Create Validation Job (JVxxx)
 
-Example response:
-
-```json
-{
-  "items": [
-    {
-      "feed_id": "FD-1",
-      "partner_name": "Acme Corp",
-      "file_name": "products.csv",
-      "status": "uploaded"
-    }
-  ],
-  "total": 1,
-  "limit": 2,
-  "offset": 0
-}
+Jobs → Track processing status
+Feed → Retrieve metadata
 ```
 
 ---
 
-## Notes
+## 🧠 Key Points
 
-* Feed IDs use the format `FD<number>`
-* Job IDs use the following format
-    * Feed submission: `JS<number>`
-    * Feed validation: `JV<number>`
-* This API uses in-memory storage; data resets when the application restarts
+* Feed upload is handled via a single endpoint: `/feeds/upload`
+* Validation is automatically triggered (no separate endpoint required)
+* Jobs provide traceability for processing steps
+* All data is persisted in a database
+* IDs follow structured formats:
+
+  * `FDxxx` → Feed
+  * `JSxxx` → Submission Job
+  * `JVxxx` → Validation Job
 
 ---
 
-## Related Documentation
+## ⚠️ Notes
+
+* Validation currently checks CSV structure only (header presence and format)
+* Jobs are executed synchronously but modeled as asynchronous processes
+* Product-level data storage is planned for a future enhancement
+
+---
+
+## 🔗 Related Documentation
 
 * [Feeds API](feeds.md)
 * [Jobs API](jobs.md)

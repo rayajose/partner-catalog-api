@@ -1,52 +1,55 @@
 # Feeds API
 
-Feeds represent partner-submitted product data files. A feed moves through the lifecycle:
-
-`uploaded → validating → validated → failed`
+The Feeds API allows clients to upload and retrieve product feed metadata. Feed uploads are validated and tracked using asynchronous job records.
 
 ---
 
-## POST /feeds
+## 🔐 Authentication
 
-Submits a partner product feed and creates an associated processing job.
+All requests must include an API key in the header:
 
-### Request Body
-
-```json
-{
-  "partner_name": "Acme Corp",
-  "file_name": "products.csv",
-  "submitted_by": "user@example.com",
-  "notes": "Initial upload"
-}
 ```
-
-### Fields
-
-* `partner_name` *(string, required)* — Name of the submitting partner
-* `file_name` *(string, required)* — Name of the uploaded file
-* `submitted_by` *(string, required, email)* — Email address of the submitter
-* `notes` *(string, optional)* — Additional context or comments
-
----
-
-### Example Request
-
-```bash
-curl -X POST "http://127.0.0.1:8000/feeds" \
-  -H "X-API-Key: demo-secret-key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "partner_name": "Acme Corp",
-    "file_name": "products.csv",
-    "submitted_by": "user@example.com",
-    "notes": "Initial upload"
-  }'
+x-api-key: <your-api-key>
 ```
 
 ---
 
-### Example Response
+## 📥 Upload Feed
+
+**POST** `/feeds/upload`
+
+Uploads a CSV product feed and creates associated job records.
+
+### Request
+
+**Headers**
+
+```
+x-api-key: demo-secret-key
+Content-Type: multipart/form-data
+```
+
+**Form Data**
+
+| Field        | Type   | Required | Description                  |
+| ------------ | ------ | -------- | ---------------------------- |
+| partner_name | string | yes      | Name of the partner          |
+| file         | file   | yes      | CSV file containing products |
+
+---
+
+### Example Request (curl)
+
+```
+curl -X POST http://127.0.0.1:8000/feeds/upload \
+  -H "x-api-key: demo-secret-key" \
+  -F "partner_name=Acme Corp" \
+  -F "file=@sample_catalog.csv"
+```
+
+---
+
+### Response (201 Created)
 
 ```json
 {
@@ -58,215 +61,94 @@ curl -X POST "http://127.0.0.1:8000/feeds" \
 
 ---
 
-### Errors
+### Behavior
 
-| Status | Description      |
-|--------|------------------|
-| 401    | Missing API key  |
-| 403    | Invalid API key  |
-| 422    | Validation error |
+* Validates file type (CSV only)
+* Validates CSV structure (header row required)
+* Creates:
 
-### Example Validation Error
+  * **Submission Job (JSxxx)** → tracks upload
+  * **Validation Job (JVxxx)** → tracks CSV validation
+* Persists feed metadata to database
 
-If `submitted_by` is not a valid email address, FastAPI returns a validation error response.
+---
+
+### Error Responses
+
+#### 400 Bad Request
 
 ```json
 {
-  "detail": [
-    {
-      "loc": ["body", "submitted_by"],
-      "msg": "value is not a valid email address",
-      "type": "value_error"
-    }
-  ]
+  "detail": "Only CSV uploads are supported at this time."
 }
 ```
+
+```json
+{
+  "detail": "Uploaded file is empty."
+}
+```
+
+```json
+{
+  "detail": "Invalid CSV file: CSV header row is missing."
+}
+```
+
 ---
 
-## GET /feeds
+## 📄 Get Feed
 
-Returns a paginated list of feeds with optional filtering by status.
+**GET** `/feeds/{feed_id}`
 
-### Query Parameters
-
-* `status` *(string, optional)* — Filter by feed status
-* `limit` *(integer, optional, default: 10)* — Maximum number of items
-* `offset` *(integer, optional, default: 0)* — Number of items to skip
+Returns metadata for a specific feed.
 
 ---
 
 ### Example Request
 
-```bash
-curl "http://127.0.0.1:8000/feeds?status=uploaded&limit=2&offset=0" \
-  -H "X-API-Key: demo-secret-key"
+```
+GET /feeds/FD001
 ```
 
 ---
 
-### Example Response
-
-```json
-{
-  "items": [
-    {
-      "feed_id": "FD001",
-      "partner_name": "Acme Corp",
-      "file_name": "products.csv",
-      "status": "uploaded"
-    }
-  ],
-  "total": 1,
-  "limit": 2,
-  "offset": 0
-}
-```
-
----
-
-### Response Fields
-
-* `items` *(array)* — List of feed objects
-* `total` *(integer)* — Total number of matching feeds
-* `limit` *(integer)* — Maximum number returned
-* `offset` *(integer)* — Number skipped
-
----
-
-### Errors
-
-| Status | Description      |
-|--------|------------------|
-| 401    | Missing API key  |
-| 403    | Invalid API key  |
-| 422    | Validation error |
-
-### Example Validation Error
-
-```json
-{
-  "detail": [
-    {
-      "loc": ["query", "offset"],
-      "msg": "value is not a valid integer",
-      "type": "type_error.integer"
-    }
-  ]
-}
-```
----
-
-## GET /feeds/{feed_id}
-
-Retrieves details for a specific feed.
-
-### Path Parameters
-
-* `feed_id` *(string, required)* — Unique identifier for the feed
-
----
-
-### Example Request
-
-```bash
-curl "http://127.0.0.1:8000/feeds/FD-1" \
-  -H "X-API-Key: demo-secret-key"
-```
-
----
-
-### Example Response
+### Response (200 OK)
 
 ```json
 {
   "feed_id": "FD001",
   "partner_name": "Acme Corp",
-  "file_name": "products.csv",
-  "status": "uploaded"
+  "file_name": "sample_catalog.csv",
+  "content_type": "text/csv",
+  "status": "uploaded",
+  "uploaded_at": "2026-04-06T14:17:27+00:00",
+  "validation_job_id": "JV001"
 }
 ```
 
 ---
 
-### Errors
+### Field Definitions
 
-| Status | Description     |
-|--------|-----------------|
-| 401    | Missing API key |
-| 403    | Invalid API key |
-| 404    | Feed not found  |
+| Field             | Type   | Description                                 |
+| ----------------- | ------ | ------------------------------------------- |
+| feed_id           | string | Unique feed identifier (FDxxx)              |
+| partner_name      | string | Partner that submitted the feed             |
+| file_name         | string | Original uploaded file name                 |
+| content_type      | string | MIME type of uploaded file                  |
+| status            | string | Feed status (`uploaded`, `validated`, etc.) |
+| uploaded_at       | string | UTC timestamp of upload                     |
+| validation_job_id | string | Job ID for validation process (JVxxx)       |
 
-### Example Not Found Response
+---
+
+### Error Responses
+
+#### 404 Not Found
 
 ```json
 {
-  "error_code": "FEED_NOT_FOUND",
-  "message": "Feed FD001 not found",
-  "details": {
-    "feed_id": "FD001"
-  }
+  "detail": "Feed FD999 not found."
 }
 ```
----
-
-## POST /feeds/{feed_id}/validate
-
-Creates a validation job for the specified feed and updates the feed status to `validating`.
-
-### Path Parameters
-
-* `feed_id` *(string, required)* — Unique identifier for the feed
-
----
-
-### Example Request
-
-```bash
-curl -X POST "http://127.0.0.1:8000/feeds/FD-1/validate" \
-  -H "X-API-Key: demo-secret-key"
-```
-
----
-
-### Example Response
-
-```json
-{
-  "message": "Validation started",
-  "feed_id": "FD001",
-  "job_id": "JV001",
-  "status": "validating"
-}
-```
-
----
-
-### Errors
-
-| Status | Description     |
-|--------|-----------------|
-| 401    | Missing API key |
-| 403    | Invalid API key |
-| 404    | Feed not found  |
-
-### Example Not Found Response
-
-```json
-{
-  "error_code": "FEED_NOT_FOUND",
-  "message": "Feed FD001 not found",
-  "details": {
-    "feed_id": "FD001"
-  }
-}
-```
----
-
-## Feed Status Values
-
-| Status     | Description             |
-|------------|-------------------------|
-| uploaded   | Feed has been submitted |
-| validating | Validation in progress  |
-| validated  | Feed passed validation  |
-| failed     | Feed failed validation  |

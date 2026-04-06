@@ -2,7 +2,7 @@
 
 A REST API for submitting, validating, and tracking partner product feeds.
 
-This project demonstrates API design, schema modeling, and developer-focused documentation.
+This project demonstrates API design, data modeling, and developer-focused documentation using a realistic e-commerce ingestion workflow.
 
 ---
 
@@ -10,12 +10,15 @@ This project demonstrates API design, schema modeling, and developer-focused doc
 
 This project demonstrates my ability to:
 
-- Design and document REST APIs  
-- Create structured, developer-focused documentation  
-- Model data and workflows using OpenAPI and JSON schemas  
-- Apply real-world concepts from e-commerce and partner onboarding systems  
+* Design and implement REST APIs
+* Create structured, developer-focused documentation
+* Model data and workflows using OpenAPI and JSON schemas
+* Build a persistence-backed service (SQLite)
+* Apply real-world concepts from e-commerce and partner onboarding systems
 
-The API simulates a partner product ingestion workflow, similar to systems used in large-scale retail and rewards platforms.
+The API simulates a partner product ingestion workflow similar to systems used in large-scale retail and rewards platforms.
+
+---
 
 ## 🚀 Quick Start
 
@@ -30,13 +33,18 @@ http://127.0.0.1:8000
 ```
 http://127.0.0.1:8000/docs
 ```
-## Authentication
+
+---
+
+## 🔐 Authentication
 
 This API uses a header-based API key.
 
-Include the following header in requests:
+Include the following header in all requests:
 
-`X-API-Key: demo-secret-key`
+```
+X-API-Key: demo-secret-key
+```
 
 ---
 
@@ -44,34 +52,38 @@ Include the following header in requests:
 
 The Partner Catalog API allows you to:
 
-* Submit product feeds from partners
-* Validate feeds asynchronously
-* Track processing jobs and status
-* Retrieve feed data
+* Upload product feeds (CSV)
+* Validate feed structure
+* Track processing via jobs
+* Retrieve feed metadata
+* Persist feed and job data in a database
 
 ---
 
 ## 🔄 Typical Workflow
 
-### Submit and validate a feed
+### Submit and process a feed
 
-1. Create a feed
-   `POST /feeds`
+1. Upload a feed
+   `POST /feeds/upload`
 
-2. Start validation
-   `POST /feeds/{feed_id}/validate`
-
-3. Check job status
+2. Track submission job
    `GET /jobs/{job_id}`
+
+3. Track validation job
+   `GET /jobs/{validation_job_id}`
+
+4. Retrieve feed metadata
+   `GET /feeds/{feed_id}`
 
 ---
 
 ## 📦 Resources
 
-| Resource | Description                             |
-| -------- | --------------------------------------- |
-| Feed     | A partner-submitted product file        |
-| Job      | A background process such as validation |
+| Resource | Description                                  |
+| -------- | -------------------------------------------- |
+| Feed     | A partner-submitted product file (CSV)       |
+| Job      | A processing task (submission or validation) |
 
 See [Resources](resources.md) for full definitions.
 
@@ -89,36 +101,46 @@ See [Resources](resources.md) for full definitions.
 
 ### Asynchronous Processing
 
-Feed validation runs as a background job:
+Feed processing is modeled using jobs:
 
-* A feed is created → job is queued
-* Validation starts → job is running
-* Job completes → status is updated
+* Feed is uploaded → submission job is created
+* Validation is performed → validation job is created
+* Jobs track status independently of the request lifecycle
 
 ---
 
-### Pagination
+### Persistence
 
-List endpoints support:
+Unlike simple demo APIs, this project uses a database:
 
-* `limit` — max results
-* `offset` — starting position
+* Feed and job metadata are stored in SQLite
+* Data persists across application restarts
+* ID generation is managed via database-backed counters
+
+---
+
+### Consistent API Design
+
+* All response fields use `snake_case`
+* Resource identifiers follow a structured format:
+
+  * `FD001` → Feed ID
+  * `JS001` → Submission Job
+  * `JV001` → Validation Job
 
 ---
 
 ### Error Handling
 
-All errors follow a standard format:
+Errors follow a consistent structure:
 
 ```json
 {
-  "error_code": "STRING_CODE",
-  "message": "Human-readable summary",
-  "details": {}
+  "detail": "Human-readable error message"
 }
 ```
 
-See [Errors](errors.md) for details.
+See [Errors](errors.md) for full details.
 
 ---
 
@@ -126,6 +148,7 @@ See [Errors](errors.md) for details.
 
 * FastAPI
 * Python
+* SQLite
 * OpenAPI (Swagger)
 * MkDocs
 
@@ -133,5 +156,10 @@ See [Errors](errors.md) for details.
 
 ## 📎 Notes
 
-This API uses in-memory storage for demonstration purposes.
-Data is reset when the application restarts.
+* This API is designed as a portfolio project to demonstrate real-world API patterns
+* CSV contents are validated but not yet persisted as product records (planned enhancement)
+* Future enhancements may include:
+
+  * Product-level storage and query endpoints
+  * Pagination and filtering
+  * Background job processing

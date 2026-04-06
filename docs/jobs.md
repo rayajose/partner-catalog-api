@@ -1,83 +1,78 @@
 # Jobs API
 
-Jobs represent background processing tasks such as feed submission and validation.
+The Jobs API provides visibility into processing operations such as feed submission and validation.
 
 ---
 
-## GET /jobs/{job_id}
+## 🔐 Authentication
 
-Returns the current status and details of a processing job.
+All requests must include:
 
-### Path Parameters
+```
+x-api-key: <your-api-key>
+```
 
-* `job_id` *(string, required)* — Unique identifier for the job
+---
+
+## 📄 Get Job
+
+**GET** `/jobs/{job_id}`
+
+Returns status and metadata for a job.
 
 ---
 
 ### Example Request
 
-```bash
-curl "http://127.0.0.1:8000/jobs/JV001" \
-  -H "X-API-Key: demo-secret-key"
+```
+GET /jobs/JS001
 ```
 
 ---
 
-### Example Response
+### Response (200 OK)
 
 ```json
 {
-  "job_id": "JV001",
+  "job_id": "JS001",
+  "job_type": "submission",
+  "status": "completed",
+  "created_at": "2026-04-06T14:17:27+00:00",
   "feed_id": "FD001",
-  "status": "running",
-  "job_type": "validation"
+  "message": "Feed upload accepted."
 }
 ```
 
 ---
 
-### Response Fields
+### Field Definitions
 
-* `job_id` *(string)* — Unique job identifier
-* `feed_id` *(string)* — Associated feed
-* `status` *(string)* — Current job status
-* `job_type` *(string)* — Type of job
+| Field      | Type   | Description                                   |
+| ---------- | ------ | --------------------------------------------- |
+| job_id     | string | Unique job identifier (JSxxx or JVxxx)        |
+| job_type   | string | Type of job (`submission`, `validation`)      |
+| status     | string | Job status (`pending`, `completed`, `failed`) |
+| created_at | string | UTC timestamp when job was created            |
+| feed_id    | string | Associated feed ID                            |
+| message    | string | Optional status message                       |
 
 ---
 
-### Errors
+### Job Types
 
-| Status | Description     |
-|--------|-----------------|
-| 401    | Missing API key |
-| 403    | Invalid API key |
-| 404    | Job not found   |
+| Type       | Description              |
+| ---------- | ------------------------ |
+| submission | Feed upload processing   |
+| validation | CSV structure validation |
 
-### Example Not Found Response
+---
+
+### Error Responses
+
+#### 404 Not Found
 
 ```json
 {
-  "error_code": "JOB_NOT_FOUND",
-  "message": "Job JV001 not found",
-  "details": {
-    "job_id": "JV001"
-  }
+  "detail": "Job JS999 not found."
 }
 ```
----
-
-## Job Status Values
-
-| Status    | Description                    |
-|-----------|--------------------------------|
-| queued    | Job is waiting to be processed |
-| running   | Job is currently executing     |
-| completed | Job completed successfully     |
-| failed    | Job failed                     |
-
-## Job ID Format
-
-Job IDs are prefixed by job type: (PLACEHOLDER FOR LATER UPDATE)
-
-- `JS<number>` — feed submission job
-- `JV<number>` — feed validation job
