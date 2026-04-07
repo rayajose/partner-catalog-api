@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import feeds, jobs
+from routers import feeds, jobs, products
 from db import init_db
 
 tags_metadata = [
@@ -11,6 +11,10 @@ tags_metadata = [
         "name": "Jobs",
         "description": "Operations for checking submission and validation job status.."
     },
+    {
+        "name": "Products",
+        "description": "Operations for viewing and filtering products parsed from uploaded CSV feeds."
+    }
 ]
 
 app = FastAPI(
@@ -28,3 +32,4 @@ init_db()
 
 app.include_router(feeds.router)
 app.include_router(jobs.router)
+app.include_router(products.router)

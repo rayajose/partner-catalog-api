@@ -19,16 +19,18 @@ class FeedResponse(BaseModel):
 
 class FeedCreateResponse(BaseModel):
     feed_id: str
-    status: FeedStatus
     job_id: str
+    status: str
+    products_ingested: int
 
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {
                     "feed_id": "FD001",
+                    "job_id": "JS001",
                     "status": "uploaded",
-                    "job_id": "JS001"
+                    "products_ingested": 3
                 }
             ]
         }
