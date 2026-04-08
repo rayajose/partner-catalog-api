@@ -21,3 +21,4 @@ class ProductResponse(BaseModel):
 class ProductListResponse(BaseModel):
     count: int
     items: list[ProductResponse]
+    next_cursor: Optional[str] = None

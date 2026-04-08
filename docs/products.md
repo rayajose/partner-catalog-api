@@ -25,28 +25,52 @@ Supports offset-based pagination via `limit` and `offset` parameters.
 
 ### Query Parameters
 
-| Name         | Type   | Required | Description                                                     |
-|--------------|--------|----------|-----------------------------------------------------------------|
-| partner_name | string | No       | Filter by partner name                                          |
-| feed_id      | string | No       | Filter by feed ID                                               |
-| sku          | string | No       | Filter by SKU                                                   |
-| brand        | string | No       | Filter by brand                                                 |
-| category     | string | No       | Filter by category                                              |
-| limit        | int    | No       | Number of results to return (default: 50, max: 500)             |
-| offset       | int    | No       | Number of records to skip before returning results (default: 0) |
+| Name         | Type   | Required | Description                                                         |
+|--------------|--------|----------|---------------------------------------------------------------------|
+| partner_name | string | No       | Filter by partner name                                              |
+| feed_id      | string | No       | Filter by feed ID                                                   |
+| sku          | string | No       | Filter by SKU                                                       |
+| brand        | string | No       | Filter by brand                                                     |
+| category     | string | No       | Filter by category                                                  |
+| limit        | int    | No       | Number of results to return (default: 50, max: 500)                 |
+| cursor       | string | No       | Pagination cursor in the format `created_at\|product_id`            |
+| sort_by      | string | No       | Field to sort by (created_at, price, product_name, brand, category) |
+| order        | string | No       | Sort direction (asc, desc). Default: desc                           |
 
 ---
 
-### Pagination
+### Sorting
 
-Results can be paginated using `limit` and `offset`.
+Results can be sorted using `sort_by` and `order`.
+
+Supported fields:
+- `created_at`
+- `price`
+- `product_name`
+- `brand`
+- `category`
 
 Examples:
 
-* `GET /products?limit=10&offset=0` → first 10 products
-* `GET /products?limit=10&offset=10` → next 10 products
+- `GET /products?sort_by=price&order=asc`
+- `GET /products?sort_by=product_name&order=asc`
 
-The `count` field in the response represents the total number of matching products, not just the number returned in the current page.
+Cursor pagination is currently supported only when using the default sort:
+- `sort_by=created_at`
+- `order=desc`
+
+### Pagination
+
+Results can be paginated using `limit` and `cursor`.
+
+The cursor is returned in the `next_cursor` field of the response. To retrieve the next page, pass that value back in the next request.
+
+Example:
+
+- `GET /products?limit=5` → first 5 products
+- `GET /products?limit=5&cursor=2026-04-08T12:00:00Z|PR005` → next 5 products
+
+`count` represents the total number of matching products remaining for the current query after the cursor is applied.
 
 ---
 
