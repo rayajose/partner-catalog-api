@@ -1,0 +1,11 @@
+sku,product_name,description,brand,category,price,currency,availability
+EL-3001,iPhone 15 Pro,Apple smartphone with A17 Pro chip and titanium design,Apple,Smartphones,999.00,USD,in_stock
+EL-3002,Galaxy S24 Ultra,Samsung flagship phone with S Pen and 200MP camera,Samsung,Smartphones,1199.99,USD,in_stock
+EL-3003,MacBook Air M2,Apple laptop with M2 chip and 13.6-inch Retina display,Apple,Laptops,1099.00,USD,in_stock
+EL-3004,XPS 13,Dell ultrabook with InfinityEdge display and Intel Core processor,Dell,Laptops,999.99,USD,in_stock
+EL-3005,WH-1000XM5,Noise-canceling wireless headphones with industry-leading ANC,Sony,Audio,349.99,USD,in_stock
+EL-3006,AirPods Pro (2nd Gen),Wireless earbuds with active noise cancellation and spatial audio,Apple,Audio,249.00,USD,in_stock
+EL-3007,LG C3 OLED TV,55-inch OLED 4K Smart TV with Dolby Vision and HDMI 2.1,LG,Televisions,1499.99,USD,out_of_stock
+EL-3008,PlayStation 5,Sony next-gen gaming console with ultra-high-speed SSD,Sony,Gaming,499.99,USD,in_stock
+EL-3009,Xbox Series X,Microsoft gaming console with 4K performance and Game Pass support,Microsoft,Gaming,499.99,USD,in_stock
+EL-3010,Kindle Paperwhite,Amazon e-reader with 6.8-inch display and adjustable warm light,Amazon,E-readers,139.99,USD,in_stock

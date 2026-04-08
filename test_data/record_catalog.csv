@@ -1,0 +1,11 @@
+sku,product_name,description,brand,category,price,currency,availability
+RC-2001,Abbey Road,The Beatles 1969 classic remastered on 180g vinyl,Apple Records,Vinyl,29.99,USD,in_stock
+RC-2002,Thriller,Michael Jackson's best-selling album with iconic tracks like Billie Jean,Epic,Vinyl,27.99,USD,in_stock
+RC-2003,Back in Black,AC/DC hard rock album featuring Hells Bells and title track,Atlantic,Vinyl,25.99,USD,in_stock
+RC-2004,The Dark Side of the Moon,Pink Floyd progressive rock masterpiece remastered,Harvest Records,Vinyl,32.50,USD,in_stock
+RC-2005,Nevermind,Nirvana grunge-defining album including Smells Like Teen Spirit,DGC,Vinyl,28.99,USD,out_of_stock
+RC-2006,Rumours,Fleetwood Mac classic featuring Dreams and Go Your Own Way,Warner Bros,Vinyl,26.99,USD,in_stock
+RC-2007,Hotel California,Eagles album with title track and New Kid in Town,Asylum Records,Vinyl,24.99,USD,in_stock
+RC-2008,21,Adele's Grammy-winning album featuring Rolling in the Deep,XL Recordings,Vinyl,23.99,USD,in_stock
+RC-2009,To Pimp a Butterfly,Kendrick Lamar critically acclaimed hip-hop album,Top Dawg Entertainment,Vinyl,31.99,USD,in_stock
+RC-2010,The Wall,Pink Floyd double album rock opera remastered edition,Columbia,Vinyl,35.99,USD,in_stock

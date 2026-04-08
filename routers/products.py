@@ -1,8 +1,13 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from db import get_connection
 from schemas.products import ProductResponse, ProductListResponse
+from security import require_api_key
 
-router = APIRouter(prefix="/products", tags=["Products"])
+router = APIRouter(
+    prefix="/products",
+    tags=["Products"],
+    dependencies=[Depends(require_api_key)]
+)
 
 
 @router.get("", response_model=ProductListResponse, summary="List products")
@@ -54,6 +59,23 @@ def list_products(
     items = [dict(row) for row in rows]
     return {"items": items, "count": len(items)}
 
+@router.get("/by-feed/{feed_id}", response_model=ProductListResponse, summary="List products for a feed")
+def list_products_by_feed(feed_id: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    rows = cursor.execute("""
+        SELECT product_id, feed_id, partner_name, sku, product_name, description,
+               brand, category, price, currency, availability, created_at
+        FROM products
+        WHERE feed_id = ?
+        ORDER BY created_at DESC
+    """, (feed_id,)).fetchall()
+
+    conn.close()
+
+    items = [dict(row) for row in rows]
+    return {"items": items, "count": len(items)}
 
 @router.get("/{product_id}", response_model=ProductResponse, summary="Get product by ID")
 def get_product(product_id: str):
@@ -75,20 +97,3 @@ def get_product(product_id: str):
     return dict(row)
 
 
-@router.get("/by-feed/{feed_id}", response_model=ProductListResponse, summary="List products for a feed")
-def list_products_by_feed(feed_id: str):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    rows = cursor.execute("""
-        SELECT product_id, feed_id, partner_name, sku, product_name, description,
-               brand, category, price, currency, availability, created_at
-        FROM products
-        WHERE feed_id = ?
-        ORDER BY created_at DESC
-    """, (feed_id,)).fetchall()
-
-    conn.close()
-
-    items = [dict(row) for row in rows]
-    return {"items": items, "count": len(items)}

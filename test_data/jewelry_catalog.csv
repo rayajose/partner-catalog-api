@@ -1,0 +1,11 @@
+sku,product_name,description,brand,category,price,currency,availability
+JW-1001,Diamond Stud Earrings,0.50ct round diamond studs in 14k white gold,LuxeGems,Earrings,899.99,USD,in_stock
+JW-1002,Gold Hoop Earrings,Classic 14k yellow gold hoop earrings,Aurora Gold,Earrings,249.99,USD,in_stock
+JW-1003,Sapphire Pendant Necklace,Blue sapphire pendant on sterling silver chain,Oceanic Gems,Necklaces,349.50,USD,in_stock
+JW-1004,Emerald Cut Engagement Ring,1.2ct emerald-cut diamond ring in platinum,Eterna Bridal,Rings,5200.00,USD,in_stock
+JW-1005,Silver Charm Bracelet,Sterling silver bracelet with customizable charms,CharmWorks,Bracelets,129.99,USD,out_of_stock
+JW-1006,Rose Gold Stackable Rings,Set of 3 rose gold minimalist rings,Blush Metals,Rings,199.99,USD,in_stock
+JW-1007,Pearl Drop Earrings,Freshwater pearl drop earrings with gold accents,Classic Pearls,Earrings,179.00,USD,in_stock
+JW-1008,Tennis Bracelet,3mm diamond tennis bracelet in white gold,LuxeGems,Bracelets,2750.00,USD,in_stock
+JW-1009,Men's Tungsten Wedding Band,Matte black tungsten carbide band,Forge Jewelry,Rings,149.99,USD,in_stock
+JW-1010,Infinity Necklace,Infinity symbol pendant in sterling silver,EverTrue,Necklaces,89.99,USD,in_stock

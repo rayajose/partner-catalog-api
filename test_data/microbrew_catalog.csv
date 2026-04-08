@@ -1,0 +1,11 @@
+sku,product_name,description,brand,category,price,currency,availability
+BR-4001,All Day IPA,Founders session IPA with citrus and pine notes,Founders Brewing Co.,Beer,10.99,USD,in_stock
+BR-4002,Hazy Little Thing IPA,Sierra Nevada unfiltered IPA with juicy hop character,Sierra Nevada Brewing Co.,Beer,11.99,USD,in_stock
+BR-4003,Jai Alai IPA,Cigar City flagship IPA with tropical fruit and citrus flavors,Cigar City Brewing,Beer,12.49,USD,in_stock
+BR-4004,Two Hearted Ale,Bell's classic American IPA brewed with Centennial hops,Bell's Brewery,Beer,11.49,USD,in_stock
+BR-4005,Pseudo Sue IPA,Toppling Goliath pale ale with Citra hops,Toppling Goliath Brewing Co.,Beer,13.99,USD,out_of_stock
+BR-4006,Fresh Squeezed IPA,Deschutes IPA bursting with orange and citrus flavor,Deschutes Brewery,Beer,10.99,USD,in_stock
+BR-4007,90 Minute IPA,DOGFISH HEAD strong IPA continuously hopped,DOGFISH HEAD Craft Brewery,Beer,14.99,USD,in_stock
+BR-4008,Guinness Draught,Classic Irish dry stout with creamy head,Guinness,Beer,9.99,USD,in_stock
+BR-4009,Modelo Especial,Mexican lager with crisp and refreshing taste,Grupo Modelo,Beer,10.49,USD,in_stock
+BR-4010,Blue Moon Belgian White,Wheat ale brewed with orange peel and coriander,Blue Moon Brewing Company,Beer,9.49,USD,in_stock
