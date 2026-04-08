@@ -22,42 +22,53 @@ def list_products(
     conn = get_connection()
     cursor = conn.cursor()
 
-    query = """
-        SELECT product_id, feed_id, partner_name, sku, product_name, description,
-               brand, category, price, currency, availability, created_at
+    base_query = """
         FROM products
         WHERE 1=1
     """
     params = []
 
     if partner_name:
-        query += " AND partner_name = ?"
+        base_query += " AND partner_name = ?"
         params.append(partner_name)
 
     if feed_id:
-        query += " AND feed_id = ?"
+        base_query += " AND feed_id = ?"
         params.append(feed_id)
 
     if sku:
-        query += " AND sku = ?"
+        base_query += " AND sku = ?"
         params.append(sku)
 
     if brand:
-        query += " AND brand = ?"
+        base_query += " AND brand = ?"
         params.append(brand)
 
     if category:
-        query += " AND category = ?"
+        base_query += " AND category = ?"
         params.append(category)
 
-    query += " ORDER BY created_at DESC LIMIT ?"
-    params.append(limit)
+    # ✅ 1. Get total count (no limit)
+    count_query = "SELECT COUNT(*) " + base_query
+    total_count = cursor.execute(count_query, params).fetchone()[0]
 
-    rows = cursor.execute(query, params).fetchall()
+    # ✅ 2. Get paginated results
+    data_query = """
+        SELECT product_id, feed_id, partner_name, sku, product_name, description,
+               brand, category, price, currency, availability, created_at
+    """ + base_query + " ORDER BY created_at DESC LIMIT ?"
+
+    data_params = params + [limit]
+
+    rows = cursor.execute(data_query, data_params).fetchall()
     conn.close()
 
     items = [dict(row) for row in rows]
-    return {"items": items, "count": len(items)}
+
+    return {
+        "count": total_count,
+        "items": items
+    }
 
 @router.get("/by-feed/{feed_id}", response_model=ProductListResponse, summary="List products for a feed")
 def list_products_by_feed(feed_id: str):

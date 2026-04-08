@@ -19,5 +19,5 @@ class ProductResponse(BaseModel):
 
 
 class ProductListResponse(BaseModel):
-    items: list[ProductResponse]
     count: int
+    items: list[ProductResponse]
