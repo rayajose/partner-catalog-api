@@ -16,5 +16,6 @@ nav:
   - Architecture: architecture.md
   - Feeds API: feeds.md
   - Jobs API: jobs.md
+  - Products API: products.md
   - Errors: errors.md
   - Workflows: workflows.md
