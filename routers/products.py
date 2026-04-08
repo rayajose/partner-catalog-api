@@ -9,7 +9,6 @@ router = APIRouter(
     dependencies=[Depends(require_api_key)]
 )
 
-
 @router.get("", response_model=ProductListResponse, summary="List products")
 def list_products(
     partner_name: str | None = Query(default=None),
@@ -17,7 +16,8 @@ def list_products(
     sku: str | None = Query(default=None),
     brand: str | None = Query(default=None),
     category: str | None = Query(default=None),
-    limit: int = Query(default=50, ge=1, le=500)
+    limit: int = Query(default=50, ge=1, le=500),
+    offset: int = Query(default=0, ge=0)
 ):
     conn = get_connection()
     cursor = conn.cursor()
@@ -48,19 +48,17 @@ def list_products(
         base_query += " AND category = ?"
         params.append(category)
 
-    # ✅ 1. Get total count (no limit)
+    # total count
     count_query = "SELECT COUNT(*) " + base_query
     total_count = cursor.execute(count_query, params).fetchone()[0]
 
-    # ✅ 2. Get paginated results
+    # paginated data
     data_query = """
         SELECT product_id, feed_id, partner_name, sku, product_name, description,
                brand, category, price, currency, availability, created_at
-    """ + base_query + " ORDER BY created_at DESC LIMIT ?"
+    """ + base_query + " ORDER BY created_at DESC LIMIT ? OFFSET ?"
 
-    data_params = params + [limit]
-
-    rows = cursor.execute(data_query, data_params).fetchall()
+    rows = cursor.execute(data_query, params + [limit, offset]).fetchall()
     conn.close()
 
     items = [dict(row) for row in rows]

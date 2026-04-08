@@ -1,188 +1,164 @@
 # Partner Catalog API
 
-A REST API for ingesting, validating, and tracking partner product feeds.
+A demo REST API for ingesting, validating, and querying product data from multiple partner feeds.
 
-This project demonstrates API design, data modeling, and developer-focused documentation using a realistic e-commerce ingestion workflow.
-
----
-
-## 🚀 Overview
-
-The Partner Catalog API simulates how large-scale platforms ingest and process partner product data.
-
-It allows clients to:
-
-* Upload product feeds (CSV)
-* Validate feed structure
-* Track processing via jobs
-* Retrieve feed metadata
-* Persist data using a database
+This project demonstrates API design, data modeling, and developer-focused documentation for a multi-partner catalog platform.
 
 ---
 
-## ✨ Key Features
+## Overview
 
-* 📥 **CSV Feed Upload** via multipart requests
-* 🔄 **Job Tracking Model** (submission + validation)
-* 💾 **Persistent Storage** (SQLite-backed)
-* 🧠 **Structured ID System** (`FDxxx`, `JSxxx`, `JVxxx`)
-* 📄 **Comprehensive API Documentation (MkDocs)**
-* 🔐 **API Key Authentication**
-* 🧩 **Layered Architecture (Router → Store → DB)**
+The Partner Catalog API simulates a real-world e-commerce ingestion pipeline where external partners submit product data feeds that are processed and made available for querying.
 
----
+Designed to simulate a multi-partner catalog ingestion platform similar to systems used by Shopify, Amazon Marketplace, and enterprise e-commerce platforms.
 
-## 🏗️ Architecture
+Key capabilities include:
 
-```text
-Client → FastAPI Router → Data Layer → SQLite Database
-```
-
-* **Routers** handle HTTP requests and validation
-* **Data layer (`stores.py`)** manages persistence and ID generation
-* **SQLite** stores feeds, jobs, and counters
-
-See [Architecture](docs/architecture.md) for full details.
+* Feed ingestion via CSV upload
+* Job-based processing and validation tracking
+* Product storage and retrieval
+* Filtering and pagination support
+* API key-based authentication
 
 ---
 
-## 🔄 Example Workflow
+## Architecture
 
-```text
-Upload Feed → Create Feed (FD001)
-            → Create Submission Job (JS001)
-            → Create Validation Job (JV001)
-
-Jobs → Track processing
-Feed → Retrieve metadata
-```
-
----
-
-## 📦 API Endpoints
-
-| Method | Endpoint           | Description            |
-| ------ | ------------------ | ---------------------- |
-| POST   | `/feeds/upload`    | Upload a CSV feed      |
-| GET    | `/feeds/{feed_id}` | Retrieve feed metadata |
-| GET    | `/jobs/{job_id}`   | Retrieve job status    |
-
-Interactive docs available at:
+The API is built using **FastAPI** and follows a modular structure:
 
 ```
-http://127.0.0.1:8000/docs
+app/
+├── main.py
+├── routers/
+│   ├── feeds.py
+│   ├── jobs.py
+│   └── products.py
+├── schemas/
+│   ├── feeds.py
+│   ├── jobs.py
+│   └── products.py
+├── db.py
 ```
+
+### Flow
+
+1. Partner uploads a product feed (`/feeds/upload`)
+2. A submission job is created
+3. Feed is validated via a validation job
+4. Products are stored in the database
+5. Products are retrieved via `/products`
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
-All requests require an API key:
+All endpoints require an API key passed in the request header:
 
 ```http
 X-API-Key: demo-secret-key
 ```
 
----
-
-## ⚡ Quick Start
-
-### 1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 2. Run the API
-
-```bash
-uvicorn app.main:app --reload
-```
-
----
-
-### 3. Upload a sample feed
-
-```bash
-curl -X POST "http://127.0.0.1:8000/feeds/upload" \
-  -H "x-api-key: demo-secret-key" \
-  -F "partner_name=Acme Corp" \
-  -F "file=@app/test_data/sample_catalog.csv"
-```
-
----
-
-## 📄 Example Response
+Requests without a valid API key will return:
 
 ```json
 {
-  "feed_id": "FD001",
-  "status": "uploaded",
-  "job_id": "JS001"
+  "detail": "Unauthorized"
 }
 ```
 
 ---
 
-## 📚 Documentation
+## Endpoints
 
-Full documentation is available in the `docs/` directory:
+### Feeds
 
-* [API Overview](docs/index.md)
-* [Feeds API](docs/feeds.md)
-* [Jobs API](docs/jobs.md)
-* [Workflows](docs/workflows.md)
-* [Architecture](docs/architecture.md)
-* [Errors](docs/errors.md)
+* `POST /feeds/upload` — Upload a product feed
+* `GET /feeds` — List feeds
+* `GET /feeds/{feed_id}` — Retrieve a feed
 
----
+### Jobs
 
-## 🧠 Design Highlights
+* `GET /jobs/{job_id}` — Retrieve job status
 
-* **Separation of concerns** between API, data, and persistence layers
-* **Database-backed ID generation** for stable, traceable identifiers
-* **API/DB field mapping** (`filename` → `file_name`)
-* **Job-based workflow model** to simulate asynchronous processing
+### Products
+
+* `GET /products` — List and filter products
+* `GET /products/{product_id}` — Retrieve a single product
+* `GET /products/by-feed/{feed_id}` — Retrieve products by feed
 
 ---
 
-## 🔮 Future Enhancements
+## Pagination
 
-* Store and query product-level data from CSV feeds
-* Add filtering and pagination
-* Introduce background job processing
-* Migrate to PostgreSQL or cloud database
-* Add authentication/authorization enhancements
+The `/products` endpoint supports offset-based pagination:
 
----
+* `limit` — number of records to return
+* `offset` — number of records to skip
 
-## 🛠️ Tech Stack
+Example:
 
-* FastAPI
-* Python
-* SQLite
-* OpenAPI (Swagger)
-* MkDocs
+```
+GET /products?limit=10&offset=20
+```
 
----
+The response includes:
 
-## 📊 API Preview
-
-*(Screenshot of Swagger UI will be added after final feature implementation)*
-
-## 📎 Notes
-
-This project is designed as a portfolio piece to demonstrate:
-
-* API design and implementation
-* technical documentation skills
-* real-world data ingestion patterns
+* `count` — total matching records
+* `items` — current page of results
 
 ---
 
-## 👤 Author
+## Sample Data
+
+Example product categories supported:
+
+* Jewelry
+* Vinyl records
+* Consumer electronics
+* Craft beer
+
+These demonstrate how the API supports multiple partner domains with a unified data model.
+
+---
+
+## Running the API
+
+Start the server using:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Then access:
+
+* Swagger UI: http://127.0.0.1:8000/docs
+* OpenAPI schema: http://127.0.0.1:8000/openapi.json
+
+---
+
+## Future Enhancements
+
+Potential improvements:
+
+* Sorting (`sort_by`, `order`)
+* Advanced filtering (price ranges, date filters)
+* Cursor-based pagination
+* Async background job processing
+* Cloud deployment (AWS)
+
+---
+
+## Purpose
+
+This project was built as a portfolio demonstration of:
+
+* REST API design
+* Data ingestion workflows
+* Technical documentation
+* Backend system modeling
+
+---
+
+## Author
 
 Ray Jose
-Technical Writer | Content Engineer | API Documentation Specialist
