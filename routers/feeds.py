@@ -9,6 +9,8 @@ from schemas.common import ErrorResponse
 from schemas.feeds import FeedResponse, FeedCreateResponse
 from db import (
     get_connection,
+    q,
+    DB_TYPE,
     next_feed_id,
     next_submission_job_id,
     next_validation_job_id,
@@ -22,6 +24,17 @@ router = APIRouter(
     tags=["Feeds"],
     dependencies=[Depends(require_api_key)]
 )
+
+
+FEED_COLUMNS = [
+    "feed_id",
+    "partner_name",
+    "file_name",
+    "content_type",
+    "status",
+    "uploaded_at",
+    "validation_job_id",
+]
 
 
 def clean_value(value: str | None) -> str | None:
@@ -42,6 +55,12 @@ def parse_price(value: str | None) -> float | None:
         return float(cleaned)
     except ValueError:
         return None
+
+
+def feed_row_to_dict(row):
+    if DB_TYPE == "sqlite":
+        return dict(row)
+    return dict(zip(FEED_COLUMNS, row))
 
 
 @router.post(
@@ -111,18 +130,18 @@ async def upload_feed(
 
     with get_connection() as conn:
         conn.execute(
-            """
-            INSERT INTO feeds (
-                feed_id,
-                partner_name,
-                file_name,
-                content_type,
-                status,
-                uploaded_at,
-                validation_job_id
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
+            q("""
+                INSERT INTO feeds (
+                    feed_id,
+                    partner_name,
+                    file_name,
+                    content_type,
+                    status,
+                    uploaded_at,
+                    validation_job_id
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """),
             (
                 feed_id,
                 partner_name,
@@ -135,17 +154,17 @@ async def upload_feed(
         )
 
         conn.execute(
-            """
-            INSERT INTO jobs (
-                job_id,
-                job_type,
-                status,
-                created_at,
-                feed_id,
-                message
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
+            q("""
+                INSERT INTO jobs (
+                    job_id,
+                    job_type,
+                    status,
+                    created_at,
+                    feed_id,
+                    message
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """),
             (
                 submission_job_id,
                 "submission",
@@ -157,17 +176,17 @@ async def upload_feed(
         )
 
         conn.execute(
-            """
-            INSERT INTO jobs (
-                job_id,
-                job_type,
-                status,
-                created_at,
-                feed_id,
-                message
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
+            q("""
+                INSERT INTO jobs (
+                    job_id,
+                    job_type,
+                    status,
+                    created_at,
+                    feed_id,
+                    message
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """),
             (
                 validation_job_id,
                 "validation",
@@ -188,23 +207,23 @@ async def upload_feed(
             product_id = next_product_id_with_conn(conn)
 
             conn.execute(
-                """
-                INSERT INTO products (
-                    product_id,
-                    feed_id,
-                    partner_name,
-                    sku,
-                    product_name,
-                    description,
-                    brand,
-                    category,
-                    price,
-                    currency,
-                    availability,
-                    created_at
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
+                q("""
+                    INSERT INTO products (
+                        product_id,
+                        feed_id,
+                        partner_name,
+                        sku,
+                        product_name,
+                        description,
+                        brand,
+                        category,
+                        price,
+                        currency,
+                        availability,
+                        created_at
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """),
                 (
                     product_id,
                     feed_id,
@@ -222,6 +241,9 @@ async def upload_feed(
             )
 
             products_ingested += 1
+
+        if DB_TYPE == "postgres":
+            conn.commit()
 
     return {
         "feed_id": feed_id,
@@ -241,18 +263,18 @@ async def upload_feed(
 async def read_feed(feed_id: str):
     with get_connection() as conn:
         feed = conn.execute(
-            """
-            SELECT
-                feed_id,
-                partner_name,
-                file_name,
-                content_type,
-                status,
-                uploaded_at,
-                validation_job_id
-            FROM feeds
-            WHERE feed_id = ?
-            """,
+            q("""
+                SELECT
+                    feed_id,
+                    partner_name,
+                    file_name,
+                    content_type,
+                    status,
+                    uploaded_at,
+                    validation_job_id
+                FROM feeds
+                WHERE feed_id = ?
+            """),
             (feed_id,)
         ).fetchone()
 
@@ -262,4 +284,4 @@ async def read_feed(feed_id: str):
             detail=f"Feed {feed_id} not found."
         )
 
-    return dict(feed)
+    return feed_row_to_dict(feed)

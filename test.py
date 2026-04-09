@@ -1,111 +1,188 @@
-from __future__ import annotations
+from fastapi import APIRouter, HTTPException, Query, Depends
+from db import get_connection, q
+from schemas.products import ProductResponse, ProductListResponse
+from security import require_api_key
 
-import sqlite3
-from pathlib import Path
-
-DB_PATH = Path(__file__).resolve().parent / "partner_catalog.db"
-
-
-def get_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+router = APIRouter(
+    prefix="/products",
+    tags=["Products"],
+    dependencies=[Depends(require_api_key)]
+)
 
 
-def init_db() -> None:
-    with get_connection() as conn:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS id_counters (
-                prefix TEXT PRIMARY KEY,
-                last_value INTEGER NOT NULL
-            )
-        """)
+@router.get("", response_model=ProductListResponse, summary="List products")
+def list_products(
+    partner_name: str | None = Query(default=None),
+    feed_id: str | None = Query(default=None),
+    sku: str | None = Query(default=None),
+    brand: str | None = Query(default=None),
+    category: str | None = Query(default=None),
+    availability: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=500),
+    sort_by: str = Query(default="created_at"),
+    order: str = Query(default="desc"),
+    cursor: str | None = Query(
+        default=None,
+        description="Pagination cursor in the format created_at|product_id"
+    )
+):
+    conn = get_connection()
+    db_cursor = conn.cursor()
 
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS feeds (
-                feed_id TEXT PRIMARY KEY,
-                partner_name TEXT NOT NULL,
-                file_name TEXT NOT NULL,
-                content_type TEXT NOT NULL,
-                status TEXT NOT NULL,
-                uploaded_at TEXT NOT NULL,
-                validation_job_id TEXT
-            )
-        """)
+    allowed_sort_fields = {
+        "created_at": "created_at",
+        "price": "price",
+        "product_name": "product_name",
+        "brand": "brand",
+        "category": "category",
+    }
 
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS jobs (
-                job_id TEXT PRIMARY KEY,
-                job_type TEXT NOT NULL,
-                status TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                feed_id TEXT NOT NULL,
-                message TEXT,
-                FOREIGN KEY (feed_id) REFERENCES feeds(feed_id)
-            )
-        """)
+    allowed_order = {
+        "asc": "ASC",
+        "desc": "DESC",
+    }
 
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS products (
-                product_id TEXT PRIMARY KEY,
-                feed_id TEXT NOT NULL,
-                partner_name TEXT NOT NULL,
-                sku TEXT,
-                product_name TEXT NOT NULL,
-                description TEXT,
-                brand TEXT,
-                category TEXT,
-                price REAL,
-                currency TEXT,
-                availability TEXT,
-                created_at TEXT NOT NULL,
-                FOREIGN KEY (feed_id) REFERENCES feeds(feed_id)
-            )
-        """)
-
-
-def _next_id_with_conn(conn: sqlite3.Connection, prefix: str) -> str:
-    row = conn.execute(
-        "SELECT last_value FROM id_counters WHERE prefix = ?",
-        (prefix,)
-    ).fetchone()
-
-    if row is None:
-        next_value = 1
-        conn.execute(
-            "INSERT INTO id_counters (prefix, last_value) VALUES (?, ?)",
-            (prefix, next_value)
-        )
-    else:
-        next_value = row["last_value"] + 1
-        conn.execute(
-            "UPDATE id_counters SET last_value = ? WHERE prefix = ?",
-            (next_value, prefix)
+    if sort_by not in allowed_sort_fields:
+        conn.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid sort_by value. Allowed values: created_at, price, product_name, brand, category."
         )
 
-    return f"{prefix}{next_value:03d}"
+    if order not in allowed_order:
+        conn.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid order value. Allowed values: asc, desc."
+        )
+
+    # Keep cursor pagination limited to the default stable sort
+    if cursor and not (sort_by == "created_at" and order == "desc"):
+        conn.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Cursor pagination is currently supported only with sort_by=created_at and order=desc."
+        )
+
+    sort_column = allowed_sort_fields[sort_by]
+    sort_direction = allowed_order[order]
+
+    base_query = """
+        FROM products
+        WHERE 1=1
+    """
+    params = []
+
+    if partner_name:
+        base_query += " AND partner_name = ?"
+        params.append(partner_name)
+
+    if feed_id:
+        base_query += " AND feed_id = ?"
+        params.append(feed_id)
+
+    if sku:
+        base_query += " AND sku = ?"
+        params.append(sku)
+
+    if brand:
+        base_query += " AND brand = ?"
+        params.append(brand)
+
+    if category:
+        base_query += " AND category = ?"
+        params.append(category)
+
+    if availability:
+        base_query += " AND availability = ?"
+        params.append(availability)
+
+    # Cursor filter for created_at DESC, product_id ASC tie-breaker
+    # "after this item" in descending created_at order means:
+    # created_at < cursor_created_at
+    # OR same created_at and product_id > cursor_product_id
+    if cursor:
+        try:
+            cursor_created_at, cursor_product_id = cursor.split("|", 1)
+        except ValueError:
+            conn.close()
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid cursor format. Expected created_at|product_id."
+            )
+
+        base_query += """
+            AND (
+                created_at < ?
+                OR (created_at = ? AND product_id > ?)
+            )
+        """
+        params.extend([cursor_created_at, cursor_created_at, cursor_product_id])
+
+    count_query = q("SELECT COUNT(*) " + base_query)
+    total_count = db_cursor.execute(count_query, params).fetchone()[0]
+
+    data_query = q(f"""
+        SELECT product_id, feed_id, partner_name, sku, product_name, description,
+               brand, category, price, currency, availability, created_at
+    """ + base_query + f"""
+        ORDER BY {sort_column} {sort_direction}, product_id ASC
+        LIMIT ?
+    """)
+
+    rows = db_cursor.execute(data_query, params + [limit]).fetchall()
+    conn.close()
+
+    items = [dict(row) for row in rows]
+
+    next_cursor = None
+    if items:
+        last_item = items[-1]
+        next_cursor = f"{last_item['created_at']}|{last_item['product_id']}"
+
+    return {
+        "count": total_count,
+        "items": items,
+        "next_cursor": next_cursor
+    }
 
 
-def _next_id(prefix: str) -> str:
-    with get_connection() as conn:
-        return _next_id_with_conn(conn, prefix)
+@router.get("/by-feed/{feed_id}", response_model=ProductListResponse, summary="List products for a feed")
+def list_products_by_feed(feed_id: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    rows = cursor.execute(q("""
+        SELECT product_id, feed_id, partner_name, sku, product_name, description,
+               brand, category, price, currency, availability, created_at
+        FROM products
+        WHERE feed_id = ?
+        ORDER BY created_at DESC
+    """), (feed_id,)).fetchall()
+
+    conn.close()
+
+    items = [dict(row) for row in rows]
+    return {"items": items, "count": len(items)}
 
 
-def next_feed_id() -> str:
-    return _next_id("FD")
+@router.get("/{product_id}", response_model=ProductResponse, summary="Get product by ID")
+def get_product(product_id: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    row = cursor.execute(q("""
+        SELECT product_id, feed_id, partner_name, sku, product_name, description,
+               brand, category, price, currency, availability, created_at
+        FROM products
+        WHERE product_id = ?
+    """), (product_id,)).fetchone()
+
+    conn.close()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Product not found.")
+
+    return dict(row)
 
 
-def next_submission_job_id() -> str:
-    return _next_id("JS")
-
-
-def next_validation_job_id() -> str:
-    return _next_id("JV")
-
-
-def next_product_id() -> str:
-    return _next_id("PR")
-
-
-def next_product_id_with_conn(conn: sqlite3.Connection) -> str:
-    return _next_id_with_conn(conn, "PR")
