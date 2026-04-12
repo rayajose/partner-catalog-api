@@ -36,6 +36,12 @@ def row_to_dict(row):
         return dict(row)
     return dict(zip(PRODUCT_COLUMNS, row))
 
+from fastapi import APIRouter, HTTPException, Query
+from db import get_connection
+from schemas.products import ProductListResponse
+
+router = APIRouter(prefix="/products", tags=["Products"])
+
 
 @router.get("", response_model=ProductListResponse, summary="List products")
 def list_products(
@@ -45,23 +51,24 @@ def list_products(
     brand: str | None = Query(default=None),
     category: str | None = Query(default=None),
     availability: str | None = Query(default=None),
-    limit: int = Query(default=50, ge=1, le=500),
-    sort_by: str = Query(default="created_at"),
-    order: str = Query(default="desc"),
+    limit: int = Query(default=10, ge=1, le=100),
+    sort_by: str = Query(default="product_id"),
+    order: str = Query(default="asc"),
     cursor: str | None = Query(
         default=None,
-        description="Pagination cursor in the format created_at|product_id"
+        description="Pagination cursor. Use the last product_id returned from the previous page."
     )
 ):
     conn = get_connection()
     db_cursor = conn.cursor()
 
     allowed_sort_fields = {
-        "created_at": "created_at",
+        "product_id": "product_id",
         "price": "price",
         "product_name": "product_name",
         "brand": "brand",
         "category": "category",
+        "created_at": "created_at",
     }
 
     allowed_order = {
@@ -73,7 +80,7 @@ def list_products(
         conn.close()
         raise HTTPException(
             status_code=400,
-            detail="Invalid sort_by value. Allowed values: created_at, price, product_name, brand, category."
+            detail="Invalid sort_by value. Allowed values: product_id, price, product_name, brand, category, created_at."
         )
 
     if order not in allowed_order:
@@ -83,11 +90,11 @@ def list_products(
             detail="Invalid order value. Allowed values: asc, desc."
         )
 
-    if cursor and not (sort_by == "created_at" and order == "desc"):
+    if cursor and sort_by != "product_id":
         conn.close()
         raise HTTPException(
             status_code=400,
-            detail="Cursor pagination is currently supported only with sort_by=created_at and order=desc."
+            detail="Cursor pagination is currently supported only with sort_by=product_id."
         )
 
     sort_column = allowed_sort_fields[sort_by]
@@ -97,78 +104,65 @@ def list_products(
         FROM products
         WHERE 1=1
     """
-    params = []
+    params: list = []
 
     if partner_name:
-        base_query += " AND partner_name = ?"
+        base_query += " AND partner_name = %s"
         params.append(partner_name)
 
     if feed_id:
-        base_query += " AND feed_id = ?"
+        base_query += " AND feed_id = %s"
         params.append(feed_id)
 
     if sku:
-        base_query += " AND sku = ?"
+        base_query += " AND sku = %s"
         params.append(sku)
 
     if brand:
-        base_query += " AND brand = ?"
+        base_query += " AND brand = %s"
         params.append(brand)
 
     if category:
-        base_query += " AND category = ?"
+        base_query += " AND category = %s"
         params.append(category)
 
     if availability:
-        base_query += " AND availability = ?"
+        base_query += " AND availability = %s"
         params.append(availability)
 
     if cursor:
-        try:
-            cursor_created_at, cursor_product_id = cursor.split("|", 1)
-        except ValueError:
-            conn.close()
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid cursor format. Expected created_at|product_id."
-            )
+        cursor_operator = ">" if order == "asc" else "<"
+        base_query += f" AND product_id {cursor_operator} %s"
+        params.append(cursor)
 
-        base_query += """
-            AND (
-                created_at < ?
-                OR (created_at = ? AND product_id > ?)
-            )
-        """
-        params.extend([cursor_created_at, cursor_created_at, cursor_product_id])
-
-    count_query = q("SELECT COUNT(*) " + base_query)
-    count_row = db_cursor.execute(count_query, params).fetchone()
+    count_query = "SELECT COUNT(*) " + base_query
+    db_cursor.execute(count_query, params)
+    count_row = db_cursor.fetchone()
     total_count = count_row[0]
 
-    data_query = q(f"""
+    data_query = f"""
         SELECT product_id, feed_id, partner_name, sku, product_name, description,
                brand, category, price, currency, availability, created_at
-    """ + base_query + f"""
+        {base_query}
         ORDER BY {sort_column} {sort_direction}, product_id ASC
-        LIMIT ?
-    """)
+        LIMIT %s
+    """
 
-    rows = db_cursor.execute(data_query, params + [limit]).fetchall()
+    db_cursor.execute(data_query, params + [limit])
+    rows = db_cursor.fetchall()
     conn.close()
 
     items = rows_to_dicts(rows)
 
     next_cursor = None
     if items:
-        last_item = items[-1]
-        next_cursor = f"{last_item['created_at']}|{last_item['product_id']}"
+        next_cursor = items[-1]["product_id"]
 
     return {
         "count": total_count,
         "items": items,
         "next_cursor": next_cursor
     }
-
 
 @router.get("/by-feed/{feed_id}", response_model=ProductListResponse, summary="List products for a feed")
 def list_products_by_feed(feed_id: str):

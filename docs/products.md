@@ -6,7 +6,7 @@ The Products API allows clients to:
 
 * Retrieve all products across partners
 * Filter products by multiple attributes
-* Paginate results using `limit` and `offset`
+* Paginate results using `limit` and `cursor`
 * Retrieve a single product by ID
 
 ---
@@ -19,7 +19,7 @@ Returns product records stored from uploaded partner feeds.
 
 Supports filtering by `partner_name`, `feed_id`, `sku`, `brand`, and `category`.
 
-Supports offset-based pagination via `limit` and `offset` parameters.
+Supports offset-based pagination via `limit` and `cursor` parameters.
 
 ---
 
