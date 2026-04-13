@@ -1,9 +1,13 @@
 from __future__ import annotations
-
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DB_TYPE = os.getenv("DB_TYPE", "sqlite").lower()
+
+print("DB_TYPE =", DB_TYPE)
 
 # SQLite config
 DB_PATH = Path(__file__).resolve().parent / "partner_catalog.db"
@@ -28,12 +32,20 @@ def q(sql: str) -> str:
 
 def get_connection():
     if DB_TYPE == "sqlite":
+        # print("USING SQLITE")
         import sqlite3
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         return conn
 
     if DB_TYPE == "postgres":
+        """
+        print("USING POSTGRES")
+        print("POSTGRES HOST =", DB_HOST)
+        print("POSTGRES PORT =", DB_PORT)
+        print("POSTGRES DB =", DB_NAME)
+        print("POSTGRES USER =", DB_USER)
+        """
         import psycopg
         return psycopg.connect(
             host=DB_HOST,
