@@ -1,0 +1,11 @@
+sku,product_name,description,brand,category,price,currency,availability
+RS1001,Nike Air Zoom Pegasus 40,Versatile daily trainer with responsive Zoom Air units and breathable mesh upper,Nike,Running Shoes,129.99,USD,In Stock
+RS1002,Adidas Ultraboost 22,High-cushion running shoe with Boost midsole for energy return and Primeknit upper,Adidas,Running Shoes,189.99,USD,In Stock
+RS1003,ASICS Gel-Nimbus 25,Premium neutral running shoe with GEL cushioning and soft FF Blast+ foam,ASICS,Running Shoes,159.99,USD,In Stock
+RS1004,Brooks Ghost 15,Smooth ride with balanced cushioning and engineered air mesh upper,Brooks,Running Shoes,139.99,USD,In Stock
+RS1005,HOKA Clifton 9,Lightweight running shoe with plush cushioning and early-stage Meta-Rocker design,HOKA,Running Shoes,144.99,USD,In Stock
+RS1006,New Balance Fresh Foam 1080v13,Soft and supportive running shoe with Fresh Foam X cushioning,New Balance,Running Shoes,164.99,USD,In Stock
+RS1007,Saucony Ride 16,Neutral running shoe with PWRRUN cushioning for comfort and durability,Saucony,Running Shoes,139.99,USD,In Stock
+RS1008,On Cloudrunner,Stability-focused running shoe with CloudTec cushioning and Helion foam,On,Running Shoes,149.99,USD,In Stock
+RS1009,Nike Invincible Run 3,Max-cushion trainer with ZoomX foam for high energy return,Nike,Running Shoes,179.99,USD,In Stock
+RS1010,Adidas Adizero Boston 12,Lightweight performance trainer with Lightstrike Pro cushioning,Adidas,Running Shoes,159.99,USD,In Stock
