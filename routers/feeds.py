@@ -68,7 +68,7 @@ def feed_row_to_dict(row):
     response_model=FeedCreateResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Upload a feed",
-    description="Uploads a CSV product feed into the system and ingests product rows."
+    description="Uploads a CSV product feed and creates associated job records."
 )
 async def upload_feed(
     partner_name: str = Form(...),

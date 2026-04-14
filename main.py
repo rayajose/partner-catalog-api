@@ -9,7 +9,7 @@ tags_metadata = [
     },
     {
         "name": "Jobs",
-        "description": "Operations for checking submission and validation job status.."
+        "description": "Operations for checking submission and validation job status."
     },
     {
         "name": "Products",
