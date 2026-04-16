@@ -12,12 +12,15 @@ repo_url: https://github.com/rayajose/partner-catalog-api
 
 nav:
   - Home: index.md
-  - API Overview: resources.md
-  - Architecture: architecture.md
+  - Getting Started: getting_started.md
+  # - API Overview: resources.md
+  # - Architecture: architecture.md
   - Feeds API: feeds.md
-  - Jobs API: jobs.md
   - Products API: products.md
-  - Errors: errors.md
+  - Jobs API: jobs.md
+  # - Errors: errors.md
   - Workflows: workflows.md
-  - Deployment: deployment.md
-  - Roadmap: roadmap.md
+  - About: about.md
+  - Screenshots: screenshots.md
+  # - Deployment: deployment.md
+  # - Roadmap: roadmap.md
