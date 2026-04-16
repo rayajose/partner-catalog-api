@@ -2,7 +2,16 @@
 
 A demo REST API for ingesting, validating, and querying product data from multiple partner feeds.
 
-This project demonstrates API design, data modeling, and developer-focused documentation for a multi-partner catalog platform.
+This project demonstrates API design, data modeling, cloud deployment, and developer-focused documentation for a multi-partner catalog platform.
+
+---
+
+## Live API
+
+> Note: The live demo may be temporarily offline to control cloud costs.
+
+* Swagger UI:
+  http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs
 
 ---
 
@@ -10,14 +19,14 @@ This project demonstrates API design, data modeling, and developer-focused docum
 
 The Partner Catalog API simulates a real-world e-commerce ingestion pipeline where external partners submit product data feeds that are processed and made available for querying.
 
-Designed to simulate a multi-partner catalog ingestion platform similar to systems used by Shopify, Amazon Marketplace, and enterprise e-commerce platforms.
+Designed to reflect multi-partner catalog ingestion systems used by platforms like Amazon Marketplace and enterprise e-commerce solutions.
 
-Key capabilities include:
+### Key capabilities
 
 * Feed ingestion via CSV upload
 * Job-based processing and validation tracking
 * Product storage and retrieval
-* Filtering and pagination support
+* Filtering, sorting, and pagination
 * API key-based authentication
 
 ---
@@ -40,7 +49,7 @@ app/
 ├── db.py
 ```
 
-### Flow
+### Ingestion Flow
 
 1. Partner uploads a product feed (`/feeds/upload`)
 2. A submission job is created
@@ -50,11 +59,26 @@ app/
 
 ---
 
+## Deployment (AWS)
+
+This API is deployed using a containerized cloud architecture:
+
+* FastAPI (Docker)
+* Amazon ECS (Fargate)
+* Amazon RDS (PostgreSQL)
+* Application Load Balancer (ALB)
+* Amazon ECR
+
+Full deployment details:
+[docs/deployment.md](docs/deployment.md)
+
+---
+
 ## Authentication
 
 All endpoints require an API key passed in the request header:
 
-```http
+```
 X-API-Key: demo-secret-key
 ```
 
@@ -90,21 +114,40 @@ Requests without a valid API key will return:
 
 ## Pagination
 
-The `/products` endpoint supports offset-based pagination:
+The `/products` endpoint uses **cursor-based pagination**.
 
 * `limit` — number of records to return
-* `offset` — number of records to skip
+* `cursor` — last seen `product_id`
 
 Example:
 
 ```
-GET /products?limit=10&offset=20
+GET /products?limit=10&cursor=PR00010
 ```
 
-The response includes:
+Response includes:
 
-* `count` — total matching records
+* `count` — number of items returned
 * `items` — current page of results
+* `next_cursor` — pointer for next page (if more data exists)
+
+---
+
+## Filtering & Sorting
+
+Supported filters:
+
+* `partner_name`
+* `feed_id`
+* `sku`
+* `brand`
+* `category`
+* `availability`
+
+Sorting:
+
+* `sort_by`: `created_at`, `price`, `product_name`, `brand`, `category`
+* `order`: `asc`, `desc`
 
 ---
 
@@ -116,16 +159,17 @@ Example product categories supported:
 * Vinyl records
 * Consumer electronics
 * Craft beer
+* Running shoes
 
-These demonstrate how the API supports multiple partner domains with a unified data model.
+These demonstrate support for multiple partner domains within a unified data model.
 
 ---
 
-## Running the API
+## Running Locally
 
-Start the server using:
+Start the server:
 
-```bash
+```
 uvicorn app.main:app --reload
 ```
 
@@ -136,15 +180,19 @@ Then access:
 
 ---
 
-## Future Enhancements
+## Troubleshooting (Real Issues Resolved)
 
-Potential improvements:
+During deployment, the following issues were encountered and resolved:
 
-* Sorting (`sort_by`, `order`)
-* Advanced filtering (price ranges, date filters)
-* Cursor-based pagination
-* Async background job processing
-* Cloud deployment (AWS)
+**Container image not found**
+
+* Cause: Image not pushed to ECR
+* Fix: Built, tagged, and pushed image with `latest`
+
+**Database connection timeout**
+
+* Cause: RDS security group blocked ECS traffic
+* Fix: Allowed ECS security group inbound on port 5432
 
 ---
 
@@ -154,6 +202,7 @@ This project was built as a portfolio demonstration of:
 
 * REST API design
 * Data ingestion workflows
+* Cloud deployment (AWS ECS, RDS, ALB)
 * Technical documentation
 * Backend system modeling
 

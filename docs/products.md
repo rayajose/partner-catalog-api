@@ -6,6 +6,7 @@ The Products API allows clients to:
 
 * Retrieve all products across partners
 * Filter products by multiple attributes
+* Sort results by supported fields
 * Paginate results using `limit` and `cursor`
 * Retrieve a single product by ID
 
@@ -17,25 +18,24 @@ The Products API allows clients to:
 
 Returns product records stored from uploaded partner feeds.
 
-Supports filtering by `partner_name`, `feed_id`, `sku`, `brand`, and `category`.
-
-Supports offset-based pagination via `limit` and `cursor` parameters.
+Supports filtering, sorting, and cursor-based pagination.
 
 ---
 
 ### Query Parameters
 
 | Name         | Type   | Required | Description                                                         |
-|--------------|--------|----------|---------------------------------------------------------------------|
+| ------------ | ------ | -------- | ------------------------------------------------------------------- |
 | partner_name | string | No       | Filter by partner name                                              |
 | feed_id      | string | No       | Filter by feed ID                                                   |
 | sku          | string | No       | Filter by SKU                                                       |
 | brand        | string | No       | Filter by brand                                                     |
 | category     | string | No       | Filter by category                                                  |
-| limit        | int    | No       | Number of results to return (default: 50, max: 500)                 |
-| cursor       | string | No       | Pagination cursor in the format `created_at\|product_id`            |
+| availability | string | No       | Filter by availability                                              |
+| limit        | int    | No       | Number of results to return (default: 10, max: 100)                 |
+| cursor       | string | No       | Pagination cursor (last seen `product_id`)                          |
 | sort_by      | string | No       | Field to sort by (created_at, price, product_name, brand, category) |
-| order        | string | No       | Sort direction (asc, desc). Default: desc                           |
+| order        | string | No       | Sort direction (`asc`, `desc`, default: `desc`)                     |
 
 ---
 
@@ -44,40 +44,54 @@ Supports offset-based pagination via `limit` and `cursor` parameters.
 Results can be sorted using `sort_by` and `order`.
 
 Supported fields:
-- `created_at`
-- `price`
-- `product_name`
-- `brand`
-- `category`
+
+* `created_at`
+* `price`
+* `product_name`
+* `brand`
+* `category`
 
 Examples:
 
-- `GET /products?sort_by=price&order=asc`
-- `GET /products?sort_by=product_name&order=asc`
+```http id="p1q2r3"
+GET /products?sort_by=price&order=asc
+```
 
-Cursor pagination is currently supported only when using the default sort:
-- `sort_by=created_at`
-- `order=desc`
+```http id="s4t5u6"
+GET /products?sort_by=product_name&order=asc
+```
+
+---
 
 ### Pagination
 
-Results can be paginated using `limit` and `cursor`.
+Results are paginated using `limit` and `cursor`.
 
-The cursor is returned in the `next_cursor` field of the response. To retrieve the next page, pass that value back in the next request.
+* The cursor is based on `product_id`
+* The API returns a `next_cursor` when more results are available
+* To retrieve the next page, pass the returned cursor in the next request
 
-Example:
+Examples:
 
-- `GET /products?limit=5` → first 5 products
-- `GET /products?limit=5&cursor=2026-04-08T12:00:00Z|PR005` → next 5 products
+```http id="v7w8x9"
+GET /products?limit=5
+```
 
-`count` represents the total number of matching products remaining for the current query after the cursor is applied.
+```http id="y1z2a3"
+GET /products?limit=5&cursor=PR00010
+```
+
+Response behavior:
+
+* `count` = number of items returned in the current page
+* `next_cursor` = present only when more results exist
 
 ---
 
 ### Example Request
 
-```http
-GET /products?partner_name=Tech Haven&limit=5&offset=0
+```http id="b4c5d6"
+GET /products?partner_name=Tech Haven&limit=5
 X-API-Key: demo-secret-key
 ```
 
@@ -85,13 +99,13 @@ X-API-Key: demo-secret-key
 
 ### Example Response
 
-```json
+```json id="e7f8g9"
 {
-  "count": 124,
+  "count": 5,
   "items": [
     {
-      "product_id": "PR001",
-      "feed_id": "FD001",
+      "product_id": "PR00001",
+      "feed_id": "FD00001",
       "partner_name": "Tech Haven",
       "sku": "EL-3001",
       "product_name": "iPhone 15 Pro",
@@ -103,7 +117,8 @@ X-API-Key: demo-secret-key
       "availability": "in_stock",
       "created_at": "2026-04-08T12:00:00Z"
     }
-  ]
+  ],
+  "next_cursor": "PR00005"
 }
 ```
 
@@ -111,10 +126,11 @@ X-API-Key: demo-secret-key
 
 ### Response Fields
 
-| Field | Type  | Description                                   |
-|-------|-------|-----------------------------------------------|
-| count | int   | Total number of products matching the filters |
-| items | array | List of product objects for the current page  |
+| Field       | Type   | Description                                  |
+| ----------- | ------ | -------------------------------------------- |
+| count       | int    | Number of items returned in the current page |
+| items       | array  | List of product objects                      |
+| next_cursor | string | Cursor for next page (if more results exist) |
 
 ---
 
@@ -129,15 +145,15 @@ Returns a single product by its unique product ID.
 ### Path Parameters
 
 | Name       | Type   | Required | Description                       |
-|------------|--------|----------|-----------------------------------|
+| ---------- | ------ | -------- | --------------------------------- |
 | product_id | string | Yes      | Unique identifier for the product |
 
 ---
 
 ### Example Request
 
-```http
-GET /products/PR001
+```http id="h1i2j3"
+GET /products/PR00001
 X-API-Key: demo-secret-key
 ```
 
@@ -145,10 +161,10 @@ X-API-Key: demo-secret-key
 
 ### Example Response
 
-```json
+```json id="k4l5m6"
 {
-  "product_id": "PR001",
-  "feed_id": "FD001",
+  "product_id": "PR00001",
+  "feed_id": "FD00001",
   "partner_name": "Tech Haven",
   "sku": "EL-3001",
   "product_name": "iPhone 15 Pro",
@@ -164,11 +180,15 @@ X-API-Key: demo-secret-key
 
 ---
 
-### Errors
+### Error Responses
 
-| Status Code   | Description                                  |
-|---------------|----------------------------------------------|
-| 404 Not Found | Product with the specified ID does not exist |
+#### 404 Not Found
+
+```json id="n7o8p9"
+{
+  "detail": "Product PR99999 not found."
+}
+```
 
 ---
 
@@ -183,15 +203,15 @@ Returns all products associated with a specific feed.
 ### Path Parameters
 
 | Name    | Type   | Required | Description                    |
-|---------|--------|----------|--------------------------------|
+| ------- | ------ | -------- | ------------------------------ |
 | feed_id | string | Yes      | Unique identifier for the feed |
 
 ---
 
 ### Example Request
 
-```http
-GET /products/by-feed/FD001
+```http id="q1r2s3"
+GET /products/by-feed/FD00001
 X-API-Key: demo-secret-key
 ```
 
@@ -199,13 +219,13 @@ X-API-Key: demo-secret-key
 
 ### Example Response
 
-```json
+```json id="t4u5v6"
 {
   "count": 10,
   "items": [
     {
-      "product_id": "PR001",
-      "feed_id": "FD001",
+      "product_id": "PR00001",
+      "feed_id": "FD00001",
       "partner_name": "Elite Jewelry",
       "sku": "JW-1001",
       "product_name": "Diamond Stud Earrings",
@@ -222,7 +242,8 @@ X-API-Key: demo-secret-key
 
 ## Notes
 
-* All endpoints require a valid `X-API-Key` header.
-* Product data is sourced from uploaded partner CSV feeds.
-* Not all fields are guaranteed to be populated for every product.
-* Results are ordered by `created_at` in descending order by default.
+* All endpoints require a valid `X-API-Key` header
+* Product data is sourced from uploaded partner CSV feeds
+* Not all fields are guaranteed to be populated for every product
+* Results are ordered by `created_at` in descending order by default
+* Cursor-based pagination is used for efficient data retrieval at scale

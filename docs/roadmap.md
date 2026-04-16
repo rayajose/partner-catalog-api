@@ -1,201 +1,242 @@
-# Partner Catalog API – Roadmap
+# Partner Catalog API — Roadmap
 
-This roadmap outlines the phased approach for building, deploying, and evolving the Partner Catalog API into a full data pipeline and analytics platform.
+This roadmap outlines the phased approach for building, deploying, and evolving the Partner Catalog API into a full data platform.
 
 ---
 
-# Phase 1 – Deploy Core API (Immediate Goal)
+## Phase 1 — Core API Deployment (Completed)
 
-## Objective
+### Objective
 
-Deploy a working, shareable API to AWS for portfolio and job applications.
+Deploy a working, cloud-hosted API for portfolio use and demonstration.
 
-## Scope
+### Scope
 
 * FastAPI application
-* PostgreSQL database (RDS)
+
+* PostgreSQL database (AWS RDS)
+
 * Core endpoints:
 
   * Feeds (upload)
   * Jobs (status tracking)
-  * Products (query with pagination)
-* Swagger/OpenAPI docs
+  * Products (query with filtering, sorting, pagination)
 
-## AWS Components
+* Swagger/OpenAPI documentation
 
-* ECS Fargate (API container)
+---
+
+### AWS Components
+
+* ECS Fargate (containerized API)
 * ECR (Docker image repository)
 * RDS (PostgreSQL)
+* Application Load Balancer (public access)
 
-## Deliverables
+---
 
-* Live API endpoint (public or demo access)
+### Deliverables
+
+* Deployed API accessible via ALB
 * Working `/docs` Swagger UI
-* Clean README with:
-
-  * Overview
-  * Architecture
-  * How to run
-
-## Resume Line (Phase 1)
-
-Deployed a cloud-hosted Partner Catalog API on AWS demonstrating API design, database persistence, and developer-focused documentation.
+* Production-style README and documentation
+* Containerized deployment workflow
 
 ---
 
-# Phase 2 – Documentation & Portfolio Polish
+### Key Outcomes
 
-## Objective
+* Implemented end-to-end ingestion workflow
+* Deployed containerized API to AWS
+* Resolved real-world issues:
 
-Make the project presentable and easy to understand for hiring managers.
+  * Container image not found (ECR)
+  * Database connectivity (security group configuration)
 
-## Enhancements
+---
 
-* Modular Markdown documentation (MkDocs recommended)
-* Architecture diagram
+### Resume Line (Phase 1)
+
+Deployed a containerized Partner Catalog API to AWS (ECS Fargate, RDS, ALB), implementing data ingestion workflows, database persistence, and production-style API documentation.
+
+---
+
+## Phase 2 — Documentation & Portfolio Polish
+
+### Objective
+
+Make the project easy to understand and compelling for hiring managers.
+
+### Enhancements
+
+* Modular Markdown documentation
+* Architecture documentation (current)
+* Expanded API reference (feeds, jobs, products)
+* Deployment guide
 * Sample datasets (CSV feeds)
-* Example workflows:
-
-  * Upload feed
-  * Validate
-  * Query products
-
-## Documentation Sections
-
-* API Overview
-* Endpoints
-* Data Model
-* Error Handling
-* Pagination
-
-## Deliverables
-
-* Hosted documentation site (optional: S3 + CloudFront)
-* Clear navigation and reusable content snippets
 
 ---
 
-# Phase 3 – Data Pipeline (ETL Layer)
+### Optional Enhancements
 
-## Objective
+* Architecture diagram (recommended)
+* Documentation hosting (S3 + CloudFront)
+* Screenshots of AWS infrastructure
+
+---
+
+### Deliverables
+
+* Complete, structured documentation set
+* Clear navigation and cross-referencing
+* Portfolio-ready repository
+
+---
+
+## Phase 3 — Data Pipeline (ETL Layer)
+
+### Objective
 
 Extend the API into a data pipeline demonstrating ETL concepts.
 
-## Features
+### Features
 
 * Store uploaded files in S3 (raw data layer)
+
 * ETL processing step (Python script or Lambda):
 
   * Validate
   * Clean
   * Normalize
-* Load processed data into database
 
-## Concepts Demonstrated
+* Load processed data into PostgreSQL
+
+---
+
+### Concepts Demonstrated
 
 * Batch data ingestion
 * Data transformation
 * Data quality validation
 * Pipeline orchestration
 
-## Optional Enhancements
+---
+
+### Optional Enhancements
 
 * Error reporting (invalid rows)
 * Feed versioning
 * Retry logic
 
-## Resume Line (Phase 3)
+---
 
-Implemented ETL pipelines for ingesting and transforming partner data, including validation, normalization, and structured storage for downstream use.
+### Resume Line (Phase 3)
+
+Implemented ETL pipelines for ingesting and transforming partner data, including validation, normalization, and structured storage for downstream querying.
 
 ---
 
-# Phase 4 – Analytics Layer
+## Phase 4 — Analytics Layer
 
-## Objective
+### Objective
 
-Enable business intelligence use cases using order and product data.
+Enable business intelligence use cases using product and order data.
 
-## Data Model Additions
+### Data Model Additions
 
 * Orders table
 * Relationships:
 
   * Product
-  * Store/Partner
+  * Partner
   * Time
 
-## Analytics Use Cases
+---
+
+### Analytics Use Cases
 
 * Sales by product
-* Sales by store
+* Sales by partner
 * Sales over time
 * Aggregations (daily, monthly)
 
-## Concepts Demonstrated
+---
+
+### Concepts Demonstrated
 
 * Dimensional modeling
-* Analytical queries
+* Analytical querying
 * Aggregation strategies
 
-## Deliverables
+---
+
+### Deliverables
 
 * Example SQL queries
 * Documented analytics scenarios
 
 ---
 
-# Phase 5 – Security & Compliance
+## Phase 5 — Security & Compliance
 
-## Objective
+### Objective
 
-Demonstrate secure handling of sensitive data (PII) aligned with real-world standards.
+Demonstrate secure handling of sensitive data aligned with real-world practices.
 
-## Features
+### Features
 
-* Encryption in transit (HTTPS)
-* Encryption at rest (S3 + RDS)
-* Basic PII handling (masking or restricted fields)
-
-## Documentation Sections
-
-* Data classification (PII vs non-PII)
-* Security controls
-* Compliance considerations (PCI DSS – high level)
-
-## Concepts Demonstrated
-
-* Data protection
-* Governance
-* Secure architecture design
-
-## Resume Line (Phase 5)
-
-Implemented data protection controls including encryption in transit and at rest to secure PII in alignment with PCI DSS requirements.
+* Encryption in transit (HTTPS via ALB)
+* Encryption at rest (RDS, S3)
+* Controlled database access (security groups)
+* API authentication (API key)
 
 ---
 
-# Long-Term Enhancements (Optional)
+### Documentation Areas
+
+* Data classification (PII vs non-PII)
+* Security controls
+* High-level compliance considerations (PCI DSS concepts)
+
+---
+
+### Concepts Demonstrated
+
+* Secure architecture design
+* Data protection
+* Governance practices
+
+---
+
+### Resume Line (Phase 5)
+
+Implemented secure cloud architecture with controlled database access, API authentication, and encryption practices aligned with real-world compliance considerations.
+
+---
+
+## Long-Term Enhancements (Optional)
 
 * Athena for querying S3 data
 * AWS Glue for managed ETL
 * Redshift for data warehousing
-* Dashboard integration (e.g., QuickSight)
+* Dashboard integration (e.g., BI tools)
+* Multi-instance ECS scaling
+* Infrastructure as Code (CloudFormation or Terraform)
 
 ---
 
-# Strategy Summary
+## Strategy Summary
 
-1. Deploy early (Phase 1)
-2. Polish for presentation (Phase 2)
+1. Deploy early (Phase 1) — completed
+2. Polish documentation (Phase 2) — in progress
 3. Add data pipeline capabilities (Phase 3)
-4. Introduce analytics (Phase 4)
-5. Layer in security/compliance (Phase 5)
+4. Introduce analytics layer (Phase 4)
+5. Expand security and compliance (Phase 5)
 
-This phased approach ensures a working portfolio project is available quickly while allowing for progressive enhancement into a full data platform demonstration.
+This phased approach ensures a working portfolio project is available early while enabling structured expansion into a full data platform.
 
 ---
 
-# Positioning Statement
+## Positioning Statement
 
-This project demonstrates the ability to design, implement, and document a modern data platform, including API development, ETL pipelines, analytics modeling, and secure data handling.
+This project demonstrates the ability to design, implement, deploy, and document a modern backend system, including API development, cloud infrastructure, data ingestion workflows, and scalable architecture design.

@@ -4,27 +4,28 @@ This document describes the high-level architecture of the Partner Catalog API, 
 
 ---
 
-## 🧩 System Overview
+## System Overview
 
 The Partner Catalog API is a layered application designed to:
 
 * Ingest partner product feeds (CSV)
-* Validate feed structure
+* Validate feed structure and content
 * Track processing via jobs
 * Persist data using a relational database
+* Expose product data via queryable endpoints
 
 ---
 
-## 🏗️ Architecture Layers
+## Architecture Layers
 
 ```text
-Client (curl / Postman / UI)
+Client (curl / Postman / Swagger UI)
         ↓
 Router Layer (FastAPI endpoints)
         ↓
-Data Layer (stores.py)
+Application / Data Access Layer (db.py)
         ↓
-Database (SQLite)
+Database (PostgreSQL / SQLite for local)
 ```
 
 ---
@@ -34,48 +35,52 @@ Database (SQLite)
 Handles:
 
 * HTTP request/response processing
-* Input validation (via FastAPI and Pydantic)
+* Input validation (FastAPI + Pydantic)
 * Authentication (API key)
-* Orchestration of business logic
+* Orchestration of application logic
 
 **Examples:**
 
 * `POST /feeds/upload`
 * `GET /feeds/{feed_id}`
 * `GET /jobs/{job_id}`
+* `GET /products`
 
 ---
 
-### 2. Data Layer (`data/stores.py`)
+### 2. Application / Data Access Layer (`db.py`)
 
 Responsible for:
 
-* Database interaction (CRUD operations)
+* Database connections (SQLite locally, PostgreSQL in production)
+* CRUD operations
 * ID generation
-* Data retrieval and updates
-* Mapping between database and API response formats
+* Query filtering, sorting, and pagination
+* Mapping database records to API response models
 
-This layer isolates persistence logic from API logic.
+This layer isolates persistence logic from API routing logic.
 
 ---
 
-### 3. Database Layer (`db.py`, SQLite)
+### 3. Database Layer (`db.py`, PostgreSQL / SQLite)
 
 Stores:
 
 * Feed metadata
 * Job metadata
+* Product data
 * ID counters for structured identifiers
 
 Key tables:
 
 * `feeds`
 * `jobs`
+* `products`
 * `id_counters`
 
 ---
 
-## 🔄 Data Flow
+## Data Flow
 
 ### Feed Upload Workflow
 
@@ -84,9 +89,9 @@ Client
   ↓
 POST /feeds/upload
   ↓
-Validate file (CSV)
+Validate file (CSV structure + content)
   ↓
-Generate IDs (FDxxx, JSxxx, JVxxx)
+Generate IDs (FDxxxxx, JSxxxxx, JVxxxxx)
   ↓
 Persist feed (feeds table)
   ↓
@@ -94,42 +99,47 @@ Persist submission job (jobs table)
   ↓
 Persist validation job (jobs table)
   ↓
+Parse and store products (products table)
+  ↓
 Return response to client
 ```
 
 ---
 
-### Feed Retrieval Workflow
+### Product Query Workflow
 
 ```text
 Client
   ↓
-GET /feeds/{feed_id}
+GET /products
   ↓
-Fetch from database
+Apply filters, sorting, pagination
   ↓
-Map DB fields → API response fields
+Query database
   ↓
-Return response
+Map DB fields → API response schema
+  ↓
+Return response (items + next_cursor)
 ```
 
 ---
 
-## 🔑 Identifier Strategy
+## Identifier Strategy
 
 The API uses structured identifiers for traceability:
 
 | Prefix | Resource       | Example |
 | ------ | -------------- | ------- |
-| FD     | Feed           | FD001   |
-| JS     | Submission Job | JS001   |
-| JV     | Validation Job | JV001   |
+| FD     | Feed           | FD00001 |
+| JS     | Submission Job | JS00001 |
+| JV     | Validation Job | JV00001 |
+| PR     | Product        | PR00001 |
 
 Identifiers are generated using a database-backed counter to ensure uniqueness and persistence.
 
 ---
 
-## 🔁 Data Mapping Strategy
+## Data Mapping Strategy
 
 The system separates internal storage format from API output format.
 
@@ -140,47 +150,57 @@ The system separates internal storage format from API output format.
 | Database     | `filename`  |
 | API Response | `file_name` |
 
-This mapping is handled in the data layer to maintain:
+This mapping is handled in the data access layer to maintain:
 
 * Consistent API naming (`snake_case`)
 * Flexibility for future schema changes
+* Decoupling of storage and presentation models
 
 ---
 
-## ⚙️ Job Model
+## Job Model
 
 Each feed generates two jobs:
 
-1. **Submission Job (`JSxxx`)**
+### 1. Submission Job (`JSxxxxx`)
 
-   * Tracks upload processing
-   * Typically completes immediately
+* Tracks upload processing
+* Typically completes immediately
 
-2. **Validation Job (`JVxxx`)**
+### 2. Validation Job (`JVxxxxx`)
 
-   * Validates CSV structure
-   * Determines feed readiness
+* Validates CSV structure and content
+* Determines feed readiness
 
 Jobs provide traceability and simulate asynchronous processing.
 
 ---
 
-## 🧠 Design Decisions
+## Design Decisions
 
 ### Separation of Concerns
 
 * Routers handle HTTP concerns
-* Stores handle persistence
+* Data layer handles persistence and querying
 * Database handles storage
 
 This improves maintainability and testability.
 
 ---
 
-### Persistence Over In-Memory Storage
+### Relational Persistence
 
-* SQLite ensures data survives application restarts
-* Enables realistic system behavior
+* SQLite used for local development
+* PostgreSQL used in production (AWS RDS)
+* Enables realistic, production-like behavior
+
+---
+
+### Cursor-Based Pagination
+
+* Uses `product_id` as cursor
+* Avoids performance issues of offset pagination
+* Scales better for large datasets
 
 ---
 
@@ -199,19 +219,29 @@ This improves maintainability and testability.
 
 ---
 
-## 🔮 Future Enhancements
+### Cloud-Native Deployment
 
-The architecture is designed to support:
-
-* Product-level storage (parsed from CSV)
-* Search and filtering endpoints
-* Pagination
-* Background job processing (e.g., Celery, queues)
-* Cloud database integration (e.g., PostgreSQL, AWS RDS)
+* Containerized application (Docker)
+* Deployed to ECS Fargate
+* Database hosted on RDS
+* Exposed via Application Load Balancer
 
 ---
 
-## 📂 Project Structure
+## Future Enhancements
+
+The architecture is designed to support:
+
+* Full async job processing (queues, workers)
+* Advanced filtering (ranges, full-text search)
+* Event-driven ingestion pipelines
+* Horizontal scaling (multiple ECS tasks)
+* Read replicas for database scaling
+* Infrastructure as Code (CloudFormation / Terraform)
+
+---
+
+## Project Structure
 
 ```text
 app/
@@ -219,14 +249,14 @@ app/
   db.py
   security.py
   settings.py
-  data/
-    stores.py
   routers/
     feeds.py
     jobs.py
+    products.py
   schemas/
     feeds.py
     jobs.py
+    products.py
     common.py
   docs/
     *.md
@@ -234,10 +264,11 @@ app/
 
 ---
 
-## 🔗 Related Documentation
+## Related Documentation
 
 * [Index](index.md)
 * [Feeds API](feeds.md)
 * [Jobs API](jobs.md)
+* [Products API](products.md)
 * [Workflows](workflows.md)
 * [Errors](errors.md)

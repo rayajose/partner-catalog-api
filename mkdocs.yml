@@ -19,3 +19,5 @@ nav:
   - Products API: products.md
   - Errors: errors.md
   - Workflows: workflows.md
+  - Deployment: deployment.md
+  - Roadmap: roadmap.md

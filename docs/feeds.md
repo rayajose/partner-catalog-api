@@ -1,30 +1,32 @@
 # Feeds API
 
-The Feeds API allows clients to upload and retrieve product feed metadata. Feed uploads are validated and tracked using asynchronous job records.
+The Feeds API allows clients to upload and retrieve product feed metadata. Feed uploads are validated, processed, and stored, with processing tracked using job records.
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 All requests must include an API key in the header:
 
-```
+```id="f1a2b3"
 x-api-key: <your-api-key>
 ```
 
 ---
 
-## 📥 Upload Feed
+## Upload Feed
 
 **POST** `/feeds/upload`
 
-Uploads a CSV product feed and creates associated job records.
+Uploads a CSV product feed, validates its structure, and creates associated job records.
+
+---
 
 ### Request
 
 **Headers**
 
-```
+```id="h4c5d6"
 x-api-key: demo-secret-key
 Content-Type: multipart/form-data
 ```
@@ -40,7 +42,7 @@ Content-Type: multipart/form-data
 
 ### Example Request (curl)
 
-```
+```bash id="e7f8g9"
 curl -X POST http://127.0.0.1:8000/feeds/upload \
   -H "x-api-key: demo-secret-key" \
   -F "partner_name=Acme Corp" \
@@ -51,11 +53,11 @@ curl -X POST http://127.0.0.1:8000/feeds/upload \
 
 ### Response (201 Created)
 
-```json
+```json id="i1j2k3"
 {
-  "feed_id": "FD001",
+  "feed_id": "FD00001",
   "status": "uploaded",
-  "job_id": "JS001"
+  "job_id": "JS00001"
 }
 ```
 
@@ -64,12 +66,17 @@ curl -X POST http://127.0.0.1:8000/feeds/upload \
 ### Behavior
 
 * Validates file type (CSV only)
+
 * Validates CSV structure (header row required)
+
 * Creates:
 
-  * **Submission Job (JSxxx)** → tracks upload
-  * **Validation Job (JVxxx)** → tracks CSV validation
-* Persists feed metadata to database
+  * **Submission Job (JSxxxxx)** → tracks upload processing
+  * **Validation Job (JVxxxxx)** → tracks CSV validation
+
+* Parses and stores product data in the database
+
+* Persists feed metadata for later retrieval
 
 ---
 
@@ -77,19 +84,19 @@ curl -X POST http://127.0.0.1:8000/feeds/upload \
 
 #### 400 Bad Request
 
-```json
+```json id="l4m5n6"
 {
   "detail": "Only CSV uploads are supported at this time."
 }
 ```
 
-```json
+```json id="o7p8q9"
 {
   "detail": "Uploaded file is empty."
 }
 ```
 
-```json
+```json id="r1s2t3"
 {
   "detail": "Invalid CSV file: CSV header row is missing."
 }
@@ -97,7 +104,7 @@ curl -X POST http://127.0.0.1:8000/feeds/upload \
 
 ---
 
-## 📄 Get Feed
+## Get Feed
 
 **GET** `/feeds/{feed_id}`
 
@@ -107,23 +114,23 @@ Returns metadata for a specific feed.
 
 ### Example Request
 
-```
-GET /feeds/FD001
+```http id="u4v5w6"
+GET /feeds/FD00001
 ```
 
 ---
 
 ### Response (200 OK)
 
-```json
+```json id="x7y8z9"
 {
-  "feed_id": "FD001",
+  "feed_id": "FD00001",
   "partner_name": "Acme Corp",
   "file_name": "sample_catalog.csv",
   "content_type": "text/csv",
   "status": "uploaded",
   "uploaded_at": "2026-04-06T14:17:27+00:00",
-  "validation_job_id": "JV001"
+  "validation_job_id": "JV00001"
 }
 ```
 
@@ -133,13 +140,13 @@ GET /feeds/FD001
 
 | Field             | Type   | Description                                 |
 | ----------------- | ------ | ------------------------------------------- |
-| feed_id           | string | Unique feed identifier (FDxxx)              |
+| feed_id           | string | Unique feed identifier (FDxxxxx)            |
 | partner_name      | string | Partner that submitted the feed             |
 | file_name         | string | Original uploaded file name                 |
 | content_type      | string | MIME type of uploaded file                  |
 | status            | string | Feed status (`uploaded`, `validated`, etc.) |
 | uploaded_at       | string | UTC timestamp of upload                     |
-| validation_job_id | string | Job ID for validation process (JVxxx)       |
+| validation_job_id | string | Job ID for validation process (JVxxxxx)     |
 
 ---
 
@@ -147,8 +154,16 @@ GET /feeds/FD001
 
 #### 404 Not Found
 
-```json
+```json id="a2b3c4"
 {
-  "detail": "Feed FD999 not found."
+  "detail": "Feed FD99999 not found."
 }
 ```
+
+---
+
+## Related Endpoints
+
+* `GET /feeds` — List all feeds
+* `GET /jobs/{job_id}` — Retrieve job status for associated jobs
+* `GET /products/by-feed/{feed_id}` — Retrieve products associated with a feed
