@@ -31,6 +31,26 @@ Designed to reflect multi-partner catalog ingestion systems used by platforms li
 
 ---
 
+## API Documentation (Live)
+
+The API is deployed to AWS and accessible via Swagger UI.
+
+### Swagger Overview
+
+![swagger-page.png](docs/screenshots/swagger-page.png)
+---
+
+### Products Endpoint
+![swagger-page-get-products-params-01.png](docs/screenshots/swagger-page-get-products-params-01.png)
+![swagger-page-get-products-params-02.png](docs/screenshots/swagger-page-get-products-params-02.png)
+![swagger-page-get-products-response-200-example.png](docs/screenshots/swagger-page-get-products-response-200-example.png)
+---
+
+### Live API Response
+
+![swagger-page-get-products-response-200-live.png](docs/screenshots/swagger-page-get-products-response-200-live.png)
+![swagger-page-get-products-response-200-live-body.png](docs/screenshots/swagger-page-get-products-response-200-live-body.png)
+
 ## Architecture
 
 The API is built using **FastAPI** and follows a modular structure:
