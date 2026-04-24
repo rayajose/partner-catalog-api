@@ -6,8 +6,12 @@ theme:
   features:
     - navigation.tabs
     - navigation.top
+    - navigation.sections
+    - content.code.copy
   palette:
-    primary: blue
+    - scheme: default
+      primary: blue grey
+      accent: blue
 
 markdown_extensions:
   - pymdownx.superfences
