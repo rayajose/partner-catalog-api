@@ -184,7 +184,7 @@ X-API-Key: demo-secret-key
 
 #### 404 Not Found
 
-```json id="n7o8p9"
+```json
 {
   "detail": "Product PR99999 not found."
 }
@@ -210,7 +210,7 @@ Returns all products associated with a specific feed.
 
 ### Example Request
 
-```http id="q1r2s3"
+```http
 GET /products/by-feed/FD00001
 X-API-Key: demo-secret-key
 ```
@@ -219,7 +219,7 @@ X-API-Key: demo-secret-key
 
 ### Example Response
 
-```json id="t4u5v6"
+```json
 {
   "count": 10,
   "items": [

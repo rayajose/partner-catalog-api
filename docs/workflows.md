@@ -12,7 +12,7 @@ This workflow shows the typical sequence for ingesting a partner product feed an
 
 ### Step 1 — Upload a feed
 
-```bash id="wf1"
+```bash
 curl -X POST "http://127.0.0.1:8000/feeds/upload" \
   -H "x-api-key: demo-secret-key" \
   -F "partner_name=Acme Corp" \
@@ -23,7 +23,7 @@ curl -X POST "http://127.0.0.1:8000/feeds/upload" \
 
 ### Example Response
 
-```json id="wf2"
+```json
 {
   "feed_id": "FD00001",
   "status": "uploaded",
@@ -45,7 +45,7 @@ curl -X POST "http://127.0.0.1:8000/feeds/upload" \
 
 ### Step 2 — Check submission job
 
-```bash id="wf3"
+```bash
 curl -H "x-api-key: demo-secret-key" \
   "http://127.0.0.1:8000/jobs/JS00001"
 ```
@@ -54,7 +54,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Example Response
 
-```json id="wf4"
+```json
 {
   "job_id": "JS00001",
   "job_type": "submission",
@@ -69,7 +69,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Step 3 — Check validation job
 
-```bash id="wf5"
+```bash
 curl -H "x-api-key: demo-secret-key" \
   "http://127.0.0.1:8000/jobs/JV00001"
 ```
@@ -78,7 +78,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Example Response
 
-```json id="wf6"
+```json
 {
   "job_id": "JV00001",
   "job_type": "validation",
@@ -93,7 +93,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Step 4 — Retrieve feed metadata
 
-```bash id="wf7"
+```bash
 curl -H "x-api-key: demo-secret-key" \
   "http://127.0.0.1:8000/feeds/FD00001"
 ```
@@ -102,7 +102,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Example Response
 
-```json id="wf8"
+```json
 {
   "feed_id": "FD00001",
   "partner_name": "Acme Corp",
@@ -118,7 +118,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Step 5 — Query products
 
-```bash id="wf9"
+```bash
 curl -H "x-api-key: demo-secret-key" \
   "http://127.0.0.1:8000/products?limit=5"
 ```
@@ -127,7 +127,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ### Example Response
 
-```json id="wf10"
+```json
 {
   "count": 5,
   "items": [
@@ -151,7 +151,7 @@ curl -H "x-api-key: demo-secret-key" \
 
 ## Workflow Summary
 
-```text id="wf11"
+```text
 Upload Feed → Create Feed (FDxxxxx)
             → Create Submission Job (JSxxxxx)
             → Create Validation Job (JVxxxxx)

@@ -22,7 +22,7 @@ Returns status and metadata for a job.
 
 ### Example Request
 
-```http id="m4n5o6"
+```http
 GET /jobs/JS00001
 ```
 
@@ -30,7 +30,7 @@ GET /jobs/JS00001
 
 ### Response (200 OK)
 
-```json id="p7q8r9"
+```json
 {
   "job_id": "JS00001",
   "job_type": "submission",
@@ -80,7 +80,7 @@ Jobs simulate asynchronous processing and may transition through the following s
 
 #### 404 Not Found
 
-```json id="s1t2u3"
+```json
 {
   "detail": "Job JS99999 not found."
 }
