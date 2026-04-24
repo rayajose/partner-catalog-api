@@ -9,6 +9,11 @@ The API is exposed through a public load balancer and provides interactive docum
 ## Health Check Endpoint
 
 The `/health` endpoint verifies API availability and database connectivity. The Application Load Balancer uses this endpoint for target group health checks.
+
+### Path
+![Health Check Path](screenshots/swagger-health-check-path.png)
+
+### Endpoint
 ![Health Check Endpoint](screenshots/swagger-health-check-endpoint.png)
 
 
