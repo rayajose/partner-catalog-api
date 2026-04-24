@@ -41,7 +41,8 @@ def row_to_dict(row):
     "",
     response_model=ProductListResponse,
     response_model_exclude_none=True,
-    summary=(
+    summary="List products",
+    description=(
         "Retrieves products from the catalog with support for filtering, "
         "sorting, and pagination.\n\n"
         "Filtering options include:\n"

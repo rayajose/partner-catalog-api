@@ -27,8 +27,8 @@ class FeedCreateResponse(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "feed_id": "FD001",
-                    "job_id": "JS001",
+                    "feed_id": "FD00001",
+                    "job_id": "JS00001",
                     "status": "uploaded",
                     "products_ingested": 3
                 }

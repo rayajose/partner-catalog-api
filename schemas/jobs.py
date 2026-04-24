@@ -17,8 +17,8 @@ class JobResponse(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "job_id": "JV001",
-                    "feed_id": "FD001",
+                    "job_id": "JV00001",
+                    "feed_id": "FD00001",
                     "status": "running",
                     "job_type": "feed_validation"
                 }

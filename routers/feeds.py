@@ -25,7 +25,6 @@ router = APIRouter(
     dependencies=[Depends(require_api_key)]
 )
 
-
 FEED_COLUMNS = [
     "feed_id",
     "partner_name",
@@ -67,20 +66,26 @@ def feed_row_to_dict(row):
     "/upload",
     response_model=FeedCreateResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Upload a partner product feed",
+    summary="Upload a product feed",
     description=(
-        "Uploads a CSV product feed for a partner. The feed is stored and "
-        "processed asynchronously.\n\n"
-        "This operation triggers:\n"
-        "- A submission job (JS00001)\n"
-        "- A validation job (JV00001)\n\n"
-        "The uploaded data will be validated and, if successful, made available "
-        "through the product catalog endpoints."
-    )
+            "Uploads a CSV product feed for a partner. The feed is stored and "
+            "processed and validated.\n\n"
+
+            "This operation triggers:\n"
+            "- A submission job (JSxxxxx)\n"
+            "- A validation job (JVxxxxx)\n\n"
+
+            "The uploaded data is validated and, if successful, ingested into the "
+            "product catalog for querying via the products endpoints."
+    ),
+    responses={
+        400: {"model": ErrorResponse, "description": "Invalid CSV file"},
+        401: {"description": "Unauthorized"},
+}
 )
 async def upload_feed(
-    partner_name: str = Form(...),
-    file: UploadFile = File(...)
+        partner_name: str = Form(...),
+        file: UploadFile = File(...)
 ):
     allowed_types = {"text/csv", "text/plain", "application/vnd.ms-excel"}
     if file.content_type not in allowed_types:
@@ -265,8 +270,9 @@ async def upload_feed(
     "/{feed_id}",
     response_model=FeedResponse,
     responses={404: {"model": ErrorResponse, "description": "Feed not found"}},
-    summary="Get feed by ID",
-    description="Retrieves details for a specific feed."
+    summary="Retrieve feed details",
+    description="Retrieves metadata for a specific feed, including upload status and "
+    "associated validation job."
 )
 async def read_feed(feed_id: str):
     with get_connection() as conn:
