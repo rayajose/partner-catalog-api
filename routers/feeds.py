@@ -67,8 +67,16 @@ def feed_row_to_dict(row):
     "/upload",
     response_model=FeedCreateResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Upload a feed",
-    description="Uploads a CSV product feed and creates associated job records."
+    summary="Upload a partner product feed",
+    description=(
+        "Uploads a CSV product feed for a partner. The feed is stored and "
+        "processed asynchronously.\n\n"
+        "This operation triggers:\n"
+        "- A submission job (JS00001)\n"
+        "- A validation job (JV00001)\n\n"
+        "The uploaded data will be validated and, if successful, made available "
+        "through the product catalog endpoints."
+    )
 )
 async def upload_feed(
     partner_name: str = Form(...),

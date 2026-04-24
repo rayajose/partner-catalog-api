@@ -8,9 +8,7 @@ The Jobs API provides visibility into processing operations such as feed submiss
 
 All requests must include:
 
-```text id="j1k2l3"
 x-api-key: <your-api-key>
-```
 
 ---
 
@@ -48,7 +46,7 @@ GET /jobs/JS00001
 ### Field Definitions
 
 | Field      | Type   | Description                                             |
-| ---------- | ------ | ------------------------------------------------------- |
+|------------|--------|---------------------------------------------------------|
 | job_id     | string | Unique job identifier (JSxxxxx or JVxxxxx)              |
 | job_type   | string | Type of job (`submission`, `validation`)                |
 | status     | string | Job status (`queued`, `running`, `completed`, `failed`) |
@@ -61,7 +59,7 @@ GET /jobs/JS00001
 ### Job Types
 
 | Type       | Description                          |
-| ---------- | ------------------------------------ |
+|------------|--------------------------------------|
 | submission | Feed upload processing               |
 | validation | CSV structure and content validation |
 

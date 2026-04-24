@@ -22,7 +22,16 @@ router = APIRouter(
     response_model=JobResponse,
     responses={404: {"model": ErrorResponse, "description": "Job not found"}},
     summary="Get job status",
-    description="Returns the current status and details of a processing job."
+    description=(
+        "Retrieves the status of a background job.\n\n"
+        "Jobs are created during feed ingestion and validation.\n\n"
+        "Possible statuses:\n"
+        "- pending\n"
+        "- in_progress\n"
+        "- completed\n"
+        "- failed\n\n"
+        "Use this endpoint to monitor processing progress and identify errors."
+    )
 )
 def get_job(job_id: str):
     job = get_job_record(job_id)

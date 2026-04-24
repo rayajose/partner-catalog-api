@@ -1,7 +1,7 @@
 # Screenshots
 
 ## Swagger UI
-![swagger-page.png](screenshots/swagger-page.png)
+![swagger-overview.png](screenshots/swagger-overview.png)
 
 ## ECS Service
 ![pcapi-ecs-cluster-service.png](screenshots/pcapi-ecs-cluster-service.png)

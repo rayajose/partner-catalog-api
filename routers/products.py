@@ -41,21 +41,31 @@ def row_to_dict(row):
     "",
     response_model=ProductListResponse,
     response_model_exclude_none=True,
-    summary="List products"
+    summary=(
+        "Retrieves products from the catalog with support for filtering, "
+        "sorting, and pagination.\n\n"
+        "Filtering options include:\n"
+        "- partner_name\n"
+        "- brand\n"
+        "- category\n"
+        "- availability\n\n"
+        "Pagination uses a cursor-based approach for efficient large dataset traversal.\n\n"
+        "Results are returned in descending order by creation time by default."
+    )
 )
 def list_products(
-    partner_name: str | None = Query(default=None),
-    feed_id: str | None = Query(default=None),
-    sku: str | None = Query(default=None),
-    brand: str | None = Query(default=None),
-    category: str | None = Query(default=None),
-    availability: str | None = Query(default=None),
-    limit: int = Query(default=10, ge=1, le=100),
-    sort_by: str = Query(default="product_id"),
-    order: str = Query(default="asc"),
+    partner_name: str | None = Query(default=None,description="Filter by partner name"),
+    feed_id: str | None = Query(default=None, description="Filter by feed_id"),
+    sku: str | None = Query(default=None, description="Filter by sku"),
+    brand: str | None = Query(default=None, description="Filter by brand"),
+    category: str | None = Query(default=None, description="Filter by category"),
+    availability: str | None = Query(default=None, description="Filter by availability"),
+    limit: int = Query(default=10, ge=1, le=100, description="Number of results to return (default: 10, max: 100)"),
+    sort_by: str = Query(default="product_id", description="Field to sort by (created_at, price, product_name, brand, category)"),
+    order: str = Query(default="asc", description="Sort direction (asc, desc, default: desc)"),
     cursor: str | None = Query(
         default=None,
-        description="Use the last product_id from the previous page to fetch the next page of results."
+        description="Cursor for pagination. Use the `next_cursor` value from the previous response"
     )
 ):
     conn = get_connection()
