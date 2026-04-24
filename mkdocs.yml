@@ -9,6 +9,11 @@ theme:
     - navigation.top
     - navigation.sections
     - content.code.copy
+  extra_css:
+    - stylesheets/extra.css
+  extra_javascript:
+    - https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js
+    - javascripts/glightbox-init.js
   palette:
     - scheme: default
       primary: blue grey
