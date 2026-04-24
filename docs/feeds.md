@@ -8,9 +8,8 @@ The Feeds API allows clients to upload and retrieve product feed metadata. Feed 
 
 All requests must include an API key in the header:
 
-```id="f1a2b3"
 x-api-key: <your-api-key>
-```
+
 
 ---
 
@@ -26,15 +25,14 @@ Uploads a CSV product feed, validates its structure, and creates associated job 
 
 **Headers**
 
-```id="h4c5d6"
+```bash
 x-api-key: demo-secret-key
 Content-Type: multipart/form-data
 ```
-
 **Form Data**
 
 | Field        | Type   | Required | Description                  |
-| ------------ | ------ | -------- | ---------------------------- |
+|--------------|--------|----------|------------------------------|
 | partner_name | string | yes      | Name of the partner          |
 | file         | file   | yes      | CSV file containing products |
 
@@ -42,7 +40,7 @@ Content-Type: multipart/form-data
 
 ### Example Request (curl)
 
-```bash id="e7f8g9"
+```bash
 curl -X POST http://127.0.0.1:8000/feeds/upload \
   -H "x-api-key: demo-secret-key" \
   -F "partner_name=Acme Corp" \
@@ -84,19 +82,19 @@ curl -X POST http://127.0.0.1:8000/feeds/upload \
 
 #### 400 Bad Request
 
-```json id="l4m5n6"
+```json
 {
   "detail": "Only CSV uploads are supported at this time."
 }
 ```
 
-```json id="o7p8q9"
+```json
 {
   "detail": "Uploaded file is empty."
 }
 ```
 
-```json id="r1s2t3"
+```json
 {
   "detail": "Invalid CSV file: CSV header row is missing."
 }
@@ -114,7 +112,7 @@ Returns metadata for a specific feed.
 
 ### Example Request
 
-```http id="u4v5w6"
+```http
 GET /feeds/FD00001
 ```
 
@@ -122,7 +120,7 @@ GET /feeds/FD00001
 
 ### Response (200 OK)
 
-```json id="x7y8z9"
+```json
 {
   "feed_id": "FD00001",
   "partner_name": "Acme Corp",
@@ -139,7 +137,7 @@ GET /feeds/FD00001
 ### Field Definitions
 
 | Field             | Type   | Description                                 |
-| ----------------- | ------ | ------------------------------------------- |
+|-------------------|--------|---------------------------------------------|
 | feed_id           | string | Unique feed identifier (FDxxxxx)            |
 | partner_name      | string | Partner that submitted the feed             |
 | file_name         | string | Original uploaded file name                 |
@@ -154,7 +152,7 @@ GET /feeds/FD00001
 
 #### 404 Not Found
 
-```json id="a2b3c4"
+```json
 {
   "detail": "Feed FD99999 not found."
 }

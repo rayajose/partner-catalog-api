@@ -15,7 +15,7 @@ http://localhost:8000
 Production:
 
 ```
-http://<your-endpoint>
+http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs
 ```
 
 ---
@@ -72,14 +72,14 @@ curl -X GET "http://localhost:8000/products?limit=5" \
 ### Pagination
 
 | Parameter | Description                                         |
-| --------- | --------------------------------------------------- |
+|-----------|-----------------------------------------------------|
 | `limit`   | Number of results to return (default: 10, max: 100) |
 | `cursor`  | Cursor for retrieving the next page of results      |
 
 ### Filtering
 
 | Parameter      | Description            |
-| -------------- | ---------------------- |
+|----------------|------------------------|
 | `partner_name` | Filter by partner name |
 | `feed_id`      | Filter by feed ID      |
 | `brand`        | Filter by brand        |
@@ -89,7 +89,7 @@ curl -X GET "http://localhost:8000/products?limit=5" \
 ### Sorting
 
 | Parameter | Description                                                    |
-| --------- | -------------------------------------------------------------- |
+|-----------|----------------------------------------------------------------|
 | `sort_by` | Field to sort by (e.g., `price`, `created_at`, `product_name`) |
 | `order`   | Sort order: `asc` or `desc`                                    |
 
@@ -100,7 +100,7 @@ curl -X GET "http://localhost:8000/products?limit=5" \
 The API uses standard HTTP status codes:
 
 | Status Code | Meaning                                   |
-| ----------- | ----------------------------------------- |
+|-------------|-------------------------------------------|
 | 200         | Request successful                        |
 | 400         | Bad request (invalid input)               |
 | 401         | Unauthorized (missing or invalid API key) |
