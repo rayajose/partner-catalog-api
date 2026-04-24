@@ -1,17 +1,16 @@
 # Screenshots
 
 ## Swagger UI
-
-![Swagger](screenshots/swagger.png)
+![swagger-page.png](screenshots/swagger-page.png)
 
 ## ECS Service
+![pcapi-ecs-cluster-service.png](screenshots/pcapi-ecs-cluster-service.png)
 
-![ECS](screenshots/ecs-service.png)
 
 ## RDS Connectivity
 
-![RDS](screenshots/rds.png)
+![pcapi-rds.png](screenshots/pcapi-rds.png)
 
 ## ECR Repository
 
-![ECR](screenshots/ecr.png)
+![pcapi-ecr-repo.png](screenshots/pcapi-ecr-repo.png)

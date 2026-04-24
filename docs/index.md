@@ -25,7 +25,7 @@ A demo REST API that simulates real-world partner product ingestion workflows, i
 
 ## Explore the API
 
-- [Getting Started](getting-started.md)
+- [Getting Started](getting_started.md)
 - [Feeds](feeds.md)
 - [Products](products.md)
 - [Jobs](jobs.md)
@@ -53,4 +53,4 @@ http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs
 
 ## Source Code
 
-https://github.com/rayajose/writing-samples
+https://github.com/rayajose/partner-catalog-api
