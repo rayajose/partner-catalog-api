@@ -6,6 +6,12 @@ This section provides visual evidence of the Partner Catalog API running in a pr
 The API is exposed through a public load balancer and provides interactive documentation via Swagger UI.
 ![swagger-overview.png](screenshots/swagger-overview.png)
 
+## Health Check Endpoint
+
+The `/health` endpoint verifies API availability and database connectivity. The Application Load Balancer uses this endpoint for target group health checks.
+![Health Check Endpoint](screenshots/swagger-health-check-endpoint.png)
+
+
 ## ECS Task Definition and Container Configuration
 The task definition specifies the container image from Amazon ECR and runtime configuration, including environment variables used for database connectivity.
 
@@ -38,7 +44,7 @@ The container image for the API is stored in Amazon Elastic Container Registry a
 
 ## Target Group Health Checks
 The target group monitors the health of running tasks using an HTTP health check endpoint to ensure traffic is only routed to healthy containers.
-![Target Group](screenshots/pcapi-ec2-target-group.png)
+![Target Group Health Checks](screenshots/pcapi-ec2-target-group-health-check.png)
 
 ## Amazon RDS PostgreSQL Database
 The API persists data in a PostgreSQL database hosted on Amazon RDS, providing managed storage and availability.

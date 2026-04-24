@@ -1,6 +1,6 @@
 # Partner Catalog API
 
-A demo REST API that simulates real-world partner product ingestion workflows, including feed upload, validation, and product retrieval.
+A containerized REST API for ingesting and querying partner product catalogs, deployed on AWS ECS with a PostgreSQL backend.
 
 ---
 

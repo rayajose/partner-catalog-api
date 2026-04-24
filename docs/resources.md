@@ -104,6 +104,24 @@ All resources use structured identifiers for consistency and traceability:
 
 ---
 
+## Health Endpoint
+
+Used to verify API and database availability.
+
+### GET /health
+
+Returns the operational status of the API.
+
+**Response**
+
+```json
+{
+  "status": "ok",
+  "database": "connected"
+}
+```
+---
+
 ## Notes
 
 * All resources use `snake_case` field naming in API responses

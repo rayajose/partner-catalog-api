@@ -185,7 +185,7 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 
 ## Health Check Behavior
 
-* ALB performs HTTP health checks against `/docs`
+* ALB performs HTTP health checks against `/health`
 * Container must start successfully and establish database connectivity
 * Failed health checks result in task replacement by ECS
 
