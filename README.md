@@ -5,6 +5,7 @@ A production-style REST API for ingesting, validating, and querying product data
 This project demonstrates end-to-end API development, including data ingestion workflows, cloud deployment on AWS (ECS Fargate + RDS), and developer-focused documentation.
 
 ---
+
 ## Purpose
 
 This project was built as a portfolio demonstration of:
@@ -14,17 +15,8 @@ This project was built as a portfolio demonstration of:
 * Cloud deployment (AWS ECS, RDS, ALB)
 * Technical documentation
 * Backend system modeling
+
 ---
-
-## Tech Stack
-
-- FastAPI (Python)
-- PostgreSQL (Amazon RDS)
-- Docker
-- Amazon ECS (Fargate)
-- Application Load Balancer (ALB)
-- Amazon ECR
-- MkDocs (documentation)
 
 ## Live API
 
@@ -39,6 +31,7 @@ http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs
 curl -H "x-api-key: demo-secret-key" \
   "http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/products?limit=5"
 ```
+
 ---
 
 ## Overview
@@ -57,25 +50,45 @@ Designed to reflect multi-partner catalog ingestion systems used by platforms li
 
 ---
 
+## Tech Stack
+
+* FastAPI (Python)
+* PostgreSQL (Amazon RDS)
+* Docker
+* Amazon ECS (Fargate)
+* Application Load Balancer (ALB)
+* Amazon ECR
+* MkDocs (documentation)
+
+---
+
 ## API Documentation (Live)
 
 The API is deployed to AWS and accessible via Swagger UI.
 
 ### Swagger Overview
-![swagger-overview.png](docs/screenshots/swagger-overview.png)
+
+![Swagger Overview](docs/screenshots/swagger-overview.png)
 
 ---
 
 ### Products Endpoint
-![swagger-products-endpoint.png](docs/screenshots/swagger-products-endpoint.png)
+
+![Products Endpoint](docs/screenshots/swagger-products-endpoint.png)
+
+---
 
 ### Live API Response
 
+![Live Response](docs/screenshots/swagger-products-response.png)
 
+Example of a successful request returning product data from the PostgreSQL database hosted on Amazon RDS.
+
+---
 
 ## Architecture
 
-The API is built using **FastAPI** and follows a modular structure:
+The API is built using FastAPI and follows a modular structure:
 
 ```
 app/
@@ -156,7 +169,7 @@ Requests without a valid API key will return:
 
 ## Pagination
 
-The `/products` endpoint uses **cursor-based pagination**.
+The `/products` endpoint uses cursor-based pagination.
 
 * `limit` — number of records to return
 * `cursor` — last seen `product_id`
@@ -175,7 +188,7 @@ Response includes:
 
 ---
 
-## Filtering & Sorting
+## Filtering and Sorting
 
 Supported filters:
 
@@ -228,7 +241,7 @@ cd partner-catalog-api
 
 ---
 
-### 2. (Optional) Run with Python (virtual environment)
+### 2. Run with Python (optional)
 
 ```bash
 python -m venv .venv
@@ -240,7 +253,7 @@ uvicorn main:app --reload
 
 Open:
 
-```text
+```
 http://127.0.0.1:8000/docs
 ```
 
@@ -269,16 +282,16 @@ docker run -p 8000:8000 ^
 
 Open:
 
-```text
+```
 http://127.0.0.1:8000/docs
 ```
 
 ---
 
-### 4. Required environment variables
+### 4. Required Environment Variables
 
 | Variable    | Description              |
-|-------------|--------------------------|
+| ----------- | ------------------------ |
 | DB_TYPE     | Database type (postgres) |
 | DB_HOST     | Database host            |
 | DB_PORT     | Database port            |
@@ -292,7 +305,7 @@ http://127.0.0.1:8000/docs
 
 All requests require an API key passed in the header:
 
-```bash
+```
 x-api-key: demo-secret-key
 ```
 
@@ -304,6 +317,33 @@ x-api-key: demo-secret-key
 * For AWS deployment, `DB_HOST` is set to the RDS endpoint
 * Swagger UI is available at `/docs`
 
+---
+
+## Troubleshooting (Real Issues Resolved)
+
+**Container image not found**
+
+* Cause: Image not pushed to ECR
+* Fix: Built, tagged, and pushed image with `latest`
+
+**Database connection timeout**
+
+* Cause: RDS security group blocked ECS traffic
+* Fix: Allowed ECS security group inbound on port 5432
+
+---
+
+## What This Project Demonstrates
+
+* End-to-end API design and implementation
+* Real-world data ingestion and validation workflows
+* Cloud deployment using AWS ECS Fargate and RDS
+* Secure service-to-database connectivity
+* Developer-focused documentation and usability
+
+This project reflects production-style backend system design rather than a simple CRUD application.
+
+---
 
 ## Author
 
