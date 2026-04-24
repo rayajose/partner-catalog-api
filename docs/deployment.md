@@ -267,3 +267,4 @@ To minimize cost:
 * Single-task deployment may have brief downtime during updates
 
 ---
+For deployment evidence, see [Screenshots](screenshots.md).
