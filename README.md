@@ -23,7 +23,7 @@ This project was built as a portfolio demonstration of:
 Swagger UI:
 http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs
 
-> Note: The API may be temporarily offline outside of demonstration periods to control cloud costs.
+> Note: The API may be temporarily offline outside of demonstration periods to control cloud costs. In production environments, HTTPS would be enabled via AWS Certificate Manager and a custom domain.
 
 ### Example Request
 
@@ -291,7 +291,7 @@ http://127.0.0.1:8000/docs
 ### 4. Required Environment Variables
 
 | Variable    | Description              |
-| ----------- | ------------------------ |
+|-------------|--------------------------|
 | DB_TYPE     | Database type (postgres) |
 | DB_HOST     | Database host            |
 | DB_PORT     | Database port            |
