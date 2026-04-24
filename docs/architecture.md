@@ -129,7 +129,7 @@ Return response (items + next_cursor)
 The API uses structured identifiers for traceability:
 
 | Prefix | Resource       | Example |
-| ------ | -------------- | ------- |
+|--------|----------------|---------|
 | FD     | Feed           | FD00001 |
 | JS     | Submission Job | JS00001 |
 | JV     | Validation Job | JV00001 |
@@ -146,7 +146,7 @@ The system separates internal storage format from API output format.
 ### Example
 
 | Layer        | Field Name  |
-| ------------ | ----------- |
+|--------------|-------------|
 | Database     | `filename`  |
 | API Response | `file_name` |
 

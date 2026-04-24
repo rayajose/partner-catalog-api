@@ -10,7 +10,7 @@ The API primarily uses FastAPI’s standard error response format.
 
 ### Format
 
-```json id="e1k2v3"
+```json
 {
   "detail": "Human-readable error message"
 }
@@ -19,7 +19,7 @@ The API primarily uses FastAPI’s standard error response format.
 ### Fields
 
 | Field  | Type   | Description                        |
-| ------ | ------ | ---------------------------------- |
+|--------|--------|------------------------------------|
 | detail | string | Description of the error condition |
 
 ---
@@ -38,7 +38,7 @@ Errors may occur in the following situations:
 ## Status Codes
 
 | Status | Meaning                             |
-| ------ | ----------------------------------- |
+|--------|-------------------------------------|
 | 200    | Request completed successfully      |
 | 201    | Resource created successfully       |
 | 400    | Bad request (invalid input or file) |
@@ -58,7 +58,7 @@ Returned when the API key is missing.
 
 #### Example
 
-```json id="a9f3d1"
+```json
 {
   "detail": "Not authenticated"
 }
@@ -72,7 +72,7 @@ Returned when the API key is invalid.
 
 #### Example
 
-```json id="b2k8m4"
+```json
 {
   "detail": "Invalid or missing API key"
 }
@@ -88,7 +88,7 @@ Returned when a requested resource does not exist.
 
 #### Example: Feed not found
 
-```json id="c4x7p2"
+```json
 {
   "detail": "Feed FD99999 not found."
 }
@@ -96,7 +96,7 @@ Returned when a requested resource does not exist.
 
 #### Example: Job not found
 
-```json id="d8r1t5"
+```json
 {
   "detail": "Job JS99999 not found."
 }
@@ -104,7 +104,7 @@ Returned when a requested resource does not exist.
 
 #### Example: Product not found
 
-```json id="f6n3q9"
+```json
 {
   "detail": "Product PR99999 not found."
 }
@@ -120,7 +120,7 @@ Returned when the request is syntactically valid but fails business rules.
 
 #### Example: Unsupported file type
 
-```json id="g3v8l0"
+```json
 {
   "detail": "Only CSV uploads are supported at this time."
 }
@@ -128,7 +128,7 @@ Returned when the request is syntactically valid but fails business rules.
 
 #### Example: Empty file
 
-```json id="h5y2c7"
+```json
 {
   "detail": "Uploaded file is empty."
 }
@@ -136,7 +136,7 @@ Returned when the request is syntactically valid but fails business rules.
 
 #### Example: Invalid CSV
 
-```json id="i1u6z4"
+```json
 {
   "detail": "Invalid CSV file: CSV header row is missing."
 }
@@ -150,7 +150,7 @@ Returned when request data fails validation (handled by FastAPI).
 
 #### Example
 
-```json id="j9m4k2"
+```json
 {
   "detail": [
     {
@@ -178,7 +178,7 @@ Returned when an unexpected server-side error occurs.
 
 #### Example
 
-```json id="k7w2s1"
+```json
 {
   "detail": "Internal server error"
 }

@@ -53,11 +53,11 @@ Supported fields:
 
 Examples:
 
-```http id="p1q2r3"
+```http
 GET /products?sort_by=price&order=asc
 ```
 
-```http id="s4t5u6"
+```http
 GET /products?sort_by=product_name&order=asc
 ```
 
@@ -73,11 +73,11 @@ Results are paginated using `limit` and `cursor`.
 
 Examples:
 
-```http id="v7w8x9"
+```http
 GET /products?limit=5
 ```
 
-```http id="y1z2a3"
+```http
 GET /products?limit=5&cursor=PR00010
 ```
 
@@ -90,7 +90,7 @@ Response behavior:
 
 ### Example Request
 
-```http id="b4c5d6"
+```http
 GET /products?partner_name=Tech Haven&limit=5
 X-API-Key: demo-secret-key
 ```
@@ -99,7 +99,7 @@ X-API-Key: demo-secret-key
 
 ### Example Response
 
-```json id="e7f8g9"
+```json
 {
   "count": 5,
   "items": [
@@ -152,7 +152,7 @@ Returns a single product by its unique product ID.
 
 ### Example Request
 
-```http id="h1i2j3"
+```http
 GET /products/PR00001
 X-API-Key: demo-secret-key
 ```
@@ -161,7 +161,7 @@ X-API-Key: demo-secret-key
 
 ### Example Response
 
-```json id="k4l5m6"
+```json
 {
   "product_id": "PR00001",
   "feed_id": "FD00001",

@@ -23,7 +23,7 @@ A Feed represents a product data file submitted by a partner for ingestion.
 ### Status Values
 
 | Status     | Description                   |
-| ---------- | ----------------------------- |
+|------------|-------------------------------|
 | uploaded   | Feed successfully received    |
 | validating | Feed is undergoing validation |
 | validated  | Feed passed validation        |
@@ -51,7 +51,7 @@ Jobs provide visibility into the ingestion workflow and simulate asynchronous pr
 ### Job Types
 
 | Type       | Description                          |
-| ---------- | ------------------------------------ |
+|------------|--------------------------------------|
 | submission | Feed upload processing               |
 | validation | CSV structure and content validation |
 
@@ -60,7 +60,7 @@ Jobs provide visibility into the ingestion workflow and simulate asynchronous pr
 ### Status Values
 
 | Status    | Description                         |
-| --------- | ----------------------------------- |
+|-----------|-------------------------------------|
 | queued    | Job created and awaiting processing |
 | running   | Job currently in progress           |
 | completed | Job completed successfully          |
@@ -96,7 +96,7 @@ Products are parsed from uploaded CSV files and stored for querying.
 All resources use structured identifiers for consistency and traceability:
 
 | Prefix | Resource       | Example |
-| ------ | -------------- | ------- |
+|--------|----------------|---------|
 | FD     | Feed           | FD00001 |
 | JS     | Submission Job | JS00001 |
 | JV     | Validation Job | JV00001 |

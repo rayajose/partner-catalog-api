@@ -51,7 +51,7 @@ curl -X POST http://127.0.0.1:8000/feeds/upload \
 
 ### Response (201 Created)
 
-```json id="i1j2k3"
+```json
 {
   "feed_id": "FD00001",
   "status": "uploaded",
