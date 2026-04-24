@@ -14,12 +14,14 @@ nav:
   - Home: index.md
   - About: about.md
   - Getting Started: getting_started.md
+
   - Architecture: architecture.md
   - Deployment: deployment.md
+  - Screenshots: screenshots.md
+
   - API Overview: resources.md
   - Feeds API: feeds.md
   - Products API: products.md
   - Jobs API: jobs.md
-  - Errors: errors.md
   - Workflows: workflows.md
-  - Screenshots: screenshots.md
+  - Errors: errors.md
