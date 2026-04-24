@@ -47,10 +47,10 @@ A demo REST API that simulates real-world partner product ingestion workflows, i
 
 Interactive API (Swagger UI):
 
-http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs
+[http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs](http://partner-catalog-alb-1398338240.us-east-2.elb.amazonaws.com/docs)
 
 ---
 
 ## Source Code
 
-https://github.com/rayajose/partner-catalog-api
+[https://github.com/rayajose/partner-catalog-api](https://github.com/rayajose/partner-catalog-api)
