@@ -8,17 +8,27 @@ theme:
   palette:
     primary: blue
 
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+
 repo_url: https://github.com/rayajose/partner-catalog-api
 
 nav:
   - Home: index.md
   - About: about.md
   - Getting Started: getting_started.md
-
   - Architecture: architecture.md
   - Deployment: deployment.md
   - Screenshots: screenshots.md
-
   - API Overview: resources.md
   - Feeds API: feeds.md
   - Products API: products.md

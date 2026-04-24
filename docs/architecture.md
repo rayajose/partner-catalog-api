@@ -1,20 +1,51 @@
 # Architecture
 
-This document describes the high-level architecture of the Partner Catalog API, including its components, data flow, and design decisions.
+This document describes the high-level architecture of the Partner Catalog API, including its components, data flow, and key design decisions.
 
 ---
 
 ## System Overview
 
-The Partner Catalog API is a layered application designed to:
+The Partner Catalog API is a layered REST application designed to:
 
 * Ingest partner product feeds (CSV)
 * Validate feed structure and content
-* Track processing via jobs
-* Persist data using a relational database
-* Expose product data via queryable endpoints
+* Track processing using job resources
+* Persist data in a relational database
+* Expose product data through queryable endpoints
+
+The system is designed to simulate real-world ingestion pipelines while maintaining a clean separation between API, data access, and persistence layers.
 
 ---
+
+## Architecture Diagram
+
+The following diagram illustrates the high-level system architecture and request flow:
+
+```mermaid
+flowchart TD
+
+    Client["Client<br>(curl / Postman / Swagger UI)"]
+
+    ALB["Application Load Balancer<br>(Public Endpoint)"]
+
+    ECS["Amazon ECS Fargate<br>FastAPI Container"]
+
+    DB["Amazon RDS<br>PostgreSQL Database"]
+
+    ECR["Amazon ECR<br>Container Registry"]
+
+    Docs["MkDocs<br>GitHub Pages"]
+
+    Client -->|HTTP Request| ALB
+    ALB -->|Route Traffic| ECS
+    ECS -->|Read/Write| DB
+
+    ECS -->|Pull Image| ECR
+
+    Client -->|View Docs| Docs
+```
+This architecture separates compute, storage, and networking concerns, enabling scalable and fault-tolerant API deployment.
 
 ## Architecture Layers
 
@@ -30,16 +61,18 @@ Database (PostgreSQL / SQLite for local)
 
 ---
 
-### 1. Router Layer (`routers/`)
+## Router Layer (`routers/`)
 
-Handles:
+The router layer is responsible for handling HTTP interactions and orchestrating application behavior.
 
-* HTTP request/response processing
-* Input validation (FastAPI + Pydantic)
-* Authentication (API key)
-* Orchestration of application logic
+Responsibilities:
 
-**Examples:**
+* Request/response handling
+* Input validation using FastAPI and Pydantic
+* API key authentication
+* Routing requests to the data access layer
+
+Example endpoints:
 
 * `POST /feeds/upload`
 * `GET /feeds/{feed_id}`
@@ -48,41 +81,47 @@ Handles:
 
 ---
 
-### 2. Application / Data Access Layer (`db.py`)
+## Application / Data Access Layer (`db.py`)
 
-Responsible for:
+This layer encapsulates all persistence and data transformation logic.
 
-* Database connections (SQLite locally, PostgreSQL in production)
-* CRUD operations
-* ID generation
-* Query filtering, sorting, and pagination
-* Mapping database records to API response models
+Responsibilities:
 
-This layer isolates persistence logic from API routing logic.
+* Managing database connections (SQLite for local development, PostgreSQL in production)
+* Performing CRUD operations
+* Generating structured identifiers
+* Implementing filtering, sorting, and pagination
+* Mapping database records to API response schemas
+
+This separation isolates business and persistence logic from HTTP concerns, improving maintainability and testability.
 
 ---
 
-### 3. Database Layer (`db.py`, PostgreSQL / SQLite)
+## Database Layer (PostgreSQL / SQLite)
 
-Stores:
+The database layer provides persistent storage for all system data.
+
+Stored entities include:
 
 * Feed metadata
 * Job metadata
-* Product data
-* ID counters for structured identifiers
+* Product records
+* Identifier counters
 
-Key tables:
+Core tables:
 
 * `feeds`
 * `jobs`
 * `products`
 * `id_counters`
 
+PostgreSQL is used in production (Amazon RDS), while SQLite is used for local development.
+
 ---
 
 ## Data Flow
 
-### Feed Upload Workflow
+### Feed Ingestion Workflow
 
 ```text
 Client
@@ -126,53 +165,83 @@ Return response (items + next_cursor)
 
 ## Identifier Strategy
 
-The API uses structured identifiers for traceability:
+The API uses structured identifiers to ensure traceability and consistency across resources.
 
 | Prefix | Resource       | Example |
-|--------|----------------|---------|
+| ------ | -------------- | ------- |
 | FD     | Feed           | FD00001 |
 | JS     | Submission Job | JS00001 |
 | JV     | Validation Job | JV00001 |
 | PR     | Product        | PR00001 |
 
-Identifiers are generated using a database-backed counter to ensure uniqueness and persistence.
+Identifiers are generated using a database-backed counter to ensure uniqueness and persistence across restarts.
 
 ---
 
 ## Data Mapping Strategy
 
-The system separates internal storage format from API output format.
+The system separates internal storage models from external API representations.
 
 ### Example
 
 | Layer        | Field Name  |
-|--------------|-------------|
+| ------------ | ----------- |
 | Database     | `filename`  |
 | API Response | `file_name` |
 
-This mapping is handled in the data access layer to maintain:
+This mapping approach:
 
-* Consistent API naming (`snake_case`)
-* Flexibility for future schema changes
-* Decoupling of storage and presentation models
+* Maintains consistent API naming conventions (`snake_case`)
+* Allows internal schema flexibility
+* Decouples storage from presentation
 
 ---
 
 ## Job Model
 
-Each feed generates two jobs:
+Each feed submission generates two job resources:
 
-### 1. Submission Job (`JSxxxxx`)
+### Submission Job (`JSxxxxx`)
 
-* Tracks upload processing
+* Tracks ingestion processing
 * Typically completes immediately
 
-### 2. Validation Job (`JVxxxxx`)
+### Validation Job (`JVxxxxx`)
 
 * Validates CSV structure and content
 * Determines feed readiness
 
-Jobs provide traceability and simulate asynchronous processing.
+Although jobs execute synchronously, they are modeled as asynchronous processes to support future extensibility.
+
+---
+
+## Deployment Architecture (AWS)
+
+The application is deployed using a container-based architecture on AWS:
+
+* **Amazon ECS Fargate** runs the containerized FastAPI application
+* **Amazon RDS (PostgreSQL)** provides persistent relational storage
+* **Application Load Balancer (ALB)** exposes a public endpoint and routes traffic
+* **Amazon ECR** stores and versions container images
+
+This architecture enables scalable, fault-tolerant operation without managing underlying infrastructure.
+
+---
+
+## Reliability and Health Monitoring
+
+* ECS maintains the desired number of running tasks
+* The load balancer performs health checks to route traffic only to healthy instances
+* Failed containers are automatically replaced
+* Database availability is managed by Amazon RDS
+
+---
+
+## Documentation and Developer Experience
+
+* Interactive API documentation is available via Swagger UI (`/docs`)
+* Static documentation is generated with MkDocs and hosted on GitHub Pages
+* Consistent request and response formats improve usability for API consumers
 
 ---
 
@@ -180,64 +249,65 @@ Jobs provide traceability and simulate asynchronous processing.
 
 ### Separation of Concerns
 
-* Routers handle HTTP concerns
-* Data layer handles persistence and querying
-* Database handles storage
+* Router layer handles HTTP interactions
+* Data layer handles persistence and transformation
+* Database layer manages storage
 
-This improves maintainability and testability.
+This separation improves maintainability, scalability, and testability.
 
 ---
 
 ### Relational Persistence
 
-* SQLite used for local development
-* PostgreSQL used in production (AWS RDS)
-* Enables realistic, production-like behavior
+* SQLite for local development
+* PostgreSQL (RDS) for production
+
+This approach provides a lightweight local setup while maintaining production realism.
 
 ---
 
 ### Cursor-Based Pagination
 
-* Uses `product_id` as cursor
-* Avoids performance issues of offset pagination
-* Scales better for large datasets
+* Uses `product_id` as a cursor
+* Avoids performance limitations of offset-based pagination
+* Supports efficient traversal of large datasets
 
 ---
 
-### Synchronous Execution with Asynchronous Model
+### Synchronous Execution with Asynchronous Modeling
 
 * Jobs execute immediately
-* Modeled as asynchronous for future extensibility (e.g., background workers)
+* Modeled as asynchronous to support future background processing
 
 ---
 
 ### Consistent API Design
 
-* All fields use `snake_case`
-* Predictable resource naming
-* Structured identifiers improve readability and debugging
+* `snake_case` field naming
+* Predictable resource structures
+* Structured identifiers for traceability
 
 ---
 
 ### Cloud-Native Deployment
 
 * Containerized application (Docker)
-* Deployed to ECS Fargate
-* Database hosted on RDS
-* Exposed via Application Load Balancer
+* Serverless compute via ECS Fargate
+* Managed database (RDS)
+* Public access via ALB
 
 ---
 
 ## Future Enhancements
 
-The architecture is designed to support:
+The architecture supports future evolution, including:
 
-* Full async job processing (queues, workers)
+* True asynchronous job processing (queues and workers)
 * Advanced filtering (ranges, full-text search)
 * Event-driven ingestion pipelines
-* Horizontal scaling (multiple ECS tasks)
+* Horizontal scaling with multiple ECS tasks
 * Read replicas for database scaling
-* Infrastructure as Code (CloudFormation / Terraform)
+* Infrastructure as Code (CloudFormation or Terraform)
 
 ---
 
@@ -272,4 +342,5 @@ app/
 * [Products API](products.md)
 * [Workflows](workflows.md)
 * [Errors](errors.md)
-* For deployment evidence, see [Screenshots](screenshots.md).
+
+For deployment evidence, see [Screenshots](screenshots.md).

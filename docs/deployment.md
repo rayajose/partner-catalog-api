@@ -1,6 +1,8 @@
-# Deployment Guide — Partner Catalog API
+# Deployment Guide
 
-This document describes how the Partner Catalog API is deployed to AWS using a containerized architecture.
+This document describes the deployment of the Partner Catalog API to AWS using a containerized, managed infrastructure.
+
+For visual confirmation of the deployed environment, see [Screenshots](screenshots.md).
 
 ---
 
@@ -8,11 +10,11 @@ This document describes how the Partner Catalog API is deployed to AWS using a c
 
 The application is deployed using the following AWS services:
 
-* FastAPI (Docker container)
-* Amazon ECS (Fargate) — container orchestration
-* Amazon RDS (PostgreSQL) — relational database
-* Application Load Balancer (ALB) — public HTTP access
-* Amazon ECR — container image registry
+* **FastAPI** — application runtime (Docker container)
+* **Amazon ECS (Fargate)** — serverless container orchestration
+* **Amazon RDS (PostgreSQL)** — relational database
+* **Application Load Balancer (ALB)** — public HTTP endpoint and traffic routing
+* **Amazon ECR** — container image registry
 
 ---
 
@@ -36,8 +38,8 @@ The application is deployed using the following AWS services:
 
 * Launch type: Fargate
 * Desired tasks: 1 (set to 0 when not in use)
-* Deployment type: Rolling update
-* Load balanced: Yes
+* Deployment strategy: Rolling update
+* Load balancing: Enabled (via ALB target group)
 
 ---
 
@@ -48,7 +50,7 @@ The application is deployed using the following AWS services:
 
   * `subnet-0397a6bfd705d1c76`
   * `subnet-07a21f9409bffa8e9`
-* Auto-assign public IP: Enabled
+* Public IP assignment: Enabled
 
 **ECS Security Group**
 
@@ -56,7 +58,7 @@ The application is deployed using the following AWS services:
 sg-00778f0b6fabbf1af
 ```
 
-* Allows outbound traffic to RDS and internet
+* Allows outbound traffic to RDS and external services
 * Used as the trusted source for database access
 
 ---
@@ -97,21 +99,22 @@ sg-07a78daece2d2cf47
 
 * PostgreSQL (5432) from ECS security group:
 
-  ```
-  sg-00778f0b6fabbf1af
-  ```
-* PostgreSQL (5432) from developer IP (optional)
+```text
+sg-00778f0b6fabbf1af
+```
 
-**Important**
+* Optional: developer IP for direct access
+
+**Notes**
 
 * RDS is not publicly accessible
-* Only ECS tasks are allowed to connect
+* Only ECS tasks are permitted to connect
 
 ---
 
 ## Environment Variables
 
-Configured in ECS task definition:
+Configured in the ECS task definition:
 
 ```text
 DB_TYPE=postgres
@@ -133,7 +136,7 @@ aws ecr get-login-password --region us-east-2 \
 | docker login --username AWS --password-stdin 792233688886.dkr.ecr.us-east-2.amazonaws.com
 ```
 
-### 2. Build Docker Image
+### 2. Build Image
 
 ```bash
 docker build -t partner-catalog-api .
@@ -146,7 +149,7 @@ docker tag partner-catalog-api:latest \
 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:latest
 ```
 
-### 4. Push to ECR
+### 4. Push Image
 
 ```bash
 docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:latest
@@ -154,7 +157,7 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 
 ### 5. Deploy to ECS
 
-* Update ECS service
+* Update the ECS service
 * Enable **Force new deployment**
 
 ---
@@ -164,11 +167,8 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 ### Stop the application
 
 1. ECS → Service → Update
-
 2. Set **Desired tasks = 0**
-
 3. Deploy
-
 4. RDS → Actions → **Stop temporarily**
 
 ---
@@ -185,9 +185,9 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 
 ## Health Check Behavior
 
-* ALB checks `/docs`
-* Container must start successfully and connect to DB
-* If DB is unreachable, container exits and task fails
+* ALB performs HTTP health checks against `/docs`
+* Container must start successfully and establish database connectivity
+* Failed health checks result in task replacement by ECS
 
 ---
 
@@ -201,11 +201,11 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 
 **Cause**
 
-* Image not found in ECR
+* Image not available in ECR
 
-**Fix**
+**Resolution**
 
-* Build, tag, and push image with correct tag
+* Verify image tag and push to ECR
 
 ---
 
@@ -217,12 +217,12 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 
 **Cause**
 
-* Application startup failure (often DB connection)
+* Application startup failure (commonly database connectivity)
 
-**Fix**
+**Resolution**
 
 * Verify environment variables
-* Verify RDS connectivity
+* Confirm RDS accessibility from ECS
 
 ---
 
@@ -230,41 +230,42 @@ docker push 792233688886.dkr.ecr.us-east-2.amazonaws.com/partner-catalog-api:lat
 
 **Error**
 
-```
+```text
 psycopg.errors.ConnectionTimeout
 ```
 
 **Cause**
 
-* RDS security group does not allow ECS traffic
+* RDS security group does not allow inbound traffic from ECS
 
-**Fix**
+**Resolution**
 
 * Add ECS security group to RDS inbound rules (port 5432)
 
 ---
 
-## Cost Notes
+## Cost Considerations
 
-This architecture incurs cost from:
+This deployment incurs cost from:
 
 * ECS Fargate (compute)
 * RDS (database instance)
-* ALB (load balancer)
+* Application Load Balancer
 
-To minimize cost:
+To reduce cost:
 
 * Stop ECS service when not in use
-* Stop RDS when not in use (auto-restarts after ~7 days)
-* Keep snapshots for backup instead of running DB continuously
+* Stop RDS instance when not in use (auto-restarts after ~7 days)
+* Retain snapshots instead of running the database continuously
 
 ---
 
-## Notes
+## Operational Notes
 
-* Application initializes database schema at startup (`init_db()`)
-* Database must be reachable for container to start successfully
-* Single-task deployment may have brief downtime during updates
+* Database schema is initialized at application startup (`init_db()`)
+* The database must be reachable for the container to start successfully
+* Single-task deployments may experience brief downtime during updates
 
 ---
+
 For deployment evidence, see [Screenshots](screenshots.md).
