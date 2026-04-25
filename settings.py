@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     db_name: str | None = Field(default=None, alias="DB_NAME")
     db_user: str | None = Field(default=None, alias="DB_USER")
     db_password: str | None = Field(default=None, alias="DB_PASSWORD")
+    aws_region: str | None = Field(default=None, alias="AWS_REGION")
+    s3_raw_bucket: str | None = Field(default=None, alias="S3_RAW_BUCKET")
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status
 
@@ -18,6 +19,7 @@ from db import (
 )
 from security import require_api_key
 from utils import utc_now_iso
+from services.s3_service import upload_raw_feed
 
 router = APIRouter(
     prefix="/feeds",
@@ -56,6 +58,12 @@ def parse_price(value: str | None) -> float | None:
         return None
 
 
+def slugify(value: str) -> str:
+    value = value.lower().strip()
+    value = re.sub(r"[^a-z0-9]+", "-", value)
+    return value.strip("-")
+
+
 def feed_row_to_dict(row):
     if DB_TYPE == "sqlite":
         return dict(row)
@@ -68,26 +76,25 @@ def feed_row_to_dict(row):
     status_code=status.HTTP_201_CREATED,
     summary="Upload a product feed",
     description=(
-            "Uploads a CSV product feed for a partner. The feed is stored and "
-            "processed and validated.\n\n"
-
-            "This operation triggers:\n"
-            "- A submission job (JSxxxxx)\n"
-            "- A validation job (JVxxxxx)\n\n"
-
-            "The uploaded data is validated and, if successful, ingested into the "
-            "product catalog for querying via the products endpoints."
+        "Uploads a CSV product feed for a partner. The feed is stored, "
+        "processed, and validated.\n\n"
+        "This operation triggers:\n"
+        "- A submission job (JSxxxxx)\n"
+        "- A validation job (JVxxxxx)\n\n"
+        "The uploaded data is validated and, if successful, ingested into the "
+        "product catalog for querying via the products endpoints."
     ),
     responses={
         400: {"model": ErrorResponse, "description": "Invalid CSV file"},
         401: {"description": "Unauthorized"},
-}
+    },
 )
 async def upload_feed(
-        partner_name: str = Form(...),
-        file: UploadFile = File(...)
+    partner_name: str = Form(...),
+    file: UploadFile = File(...)
 ):
     allowed_types = {"text/csv", "text/plain", "application/vnd.ms-excel"}
+
     if file.content_type not in allowed_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -95,6 +102,7 @@ async def upload_feed(
         )
 
     content = await file.read()
+
     if not content:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -141,6 +149,25 @@ async def upload_feed(
     now = utc_now_iso()
     products_ingested = 0
 
+    original_filename = file.filename or "uploaded.csv"
+    safe_partner_name = slugify(partner_name)
+
+    raw_file_s3_key = (
+        f"raw/partners/{safe_partner_name}/feeds/{feed_id}/{original_filename}"
+    )
+
+    try:
+        upload_raw_feed(
+            file_bytes=content,
+            object_key=raw_file_s3_key,
+            content_type=file.content_type or "text/csv",
+        )
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        )
+
     with get_connection() as conn:
         conn.execute(
             q("""
@@ -158,7 +185,7 @@ async def upload_feed(
             (
                 feed_id,
                 partner_name,
-                file.filename or "uploaded.csv",
+                original_filename,
                 file.content_type or "text/csv",
                 "uploaded",
                 now,
@@ -271,8 +298,10 @@ async def upload_feed(
     response_model=FeedResponse,
     responses={404: {"model": ErrorResponse, "description": "Feed not found"}},
     summary="Retrieve feed details",
-    description="Retrieves metadata for a specific feed, including upload status and "
-    "associated validation job."
+    description=(
+        "Retrieves metadata for a specific feed, including upload status and "
+        "associated validation job."
+    ),
 )
 async def read_feed(feed_id: str):
     with get_connection() as conn:
