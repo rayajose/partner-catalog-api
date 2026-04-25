@@ -15,7 +15,6 @@ from db import (
     next_feed_id,
     next_submission_job_id,
     next_validation_job_id,
-    next_product_id_with_conn,
 )
 from security import require_api_key
 from utils import utc_now_iso
@@ -45,19 +44,6 @@ def clean_value(value: str | None) -> str | None:
     return value if value else None
 
 
-def parse_price(value: str | None) -> float | None:
-    cleaned = clean_value(value)
-    if cleaned is None:
-        return None
-
-    cleaned = cleaned.replace("$", "").replace(",", "")
-
-    try:
-        return float(cleaned)
-    except ValueError:
-        return None
-
-
 def slugify(value: str) -> str:
     value = value.lower().strip()
     value = re.sub(r"[^a-z0-9]+", "-", value)
@@ -81,8 +67,7 @@ def feed_row_to_dict(row):
         "This operation triggers:\n"
         "- A submission job (JSxxxxx)\n"
         "- A validation job (JVxxxxx)\n\n"
-        "The uploaded data is validated and, if successful, ingested into the "
-        "product catalog for querying via the products endpoints."
+        "The uploaded data is validated and queued for ETL processing before being ingested into the product catalog."
     ),
     responses={
         400: {"model": ErrorResponse, "description": "Invalid CSV file"},
@@ -135,8 +120,6 @@ async def upload_feed(
                 f"Missing required CSV headers: {', '.join(sorted(missing_headers))}"
             )
 
-        rows = list(reader)
-
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -147,7 +130,6 @@ async def upload_feed(
     submission_job_id = next_submission_job_id()
     validation_job_id = next_validation_job_id()
     now = utc_now_iso()
-    products_ingested = 0
 
     original_filename = file.filename or "uploaded.csv"
     safe_partner_name = slugify(partner_name)
@@ -234,57 +216,12 @@ async def upload_feed(
             (
                 validation_job_id,
                 "validation",
-                "completed",
+                "pending",
                 now,
                 feed_id,
-                "CSV structure validation completed."
+                "CSV structure validation pending ETL processing."
             )
         )
-
-        for row in rows:
-            sku = clean_value(row.get("sku"))
-            product_name = clean_value(row.get("product_name"))
-
-            if not sku or not product_name:
-                continue
-
-            product_id = next_product_id_with_conn(conn)
-
-            conn.execute(
-                q("""
-                    INSERT INTO products (
-                        product_id,
-                        feed_id,
-                        partner_name,
-                        sku,
-                        product_name,
-                        description,
-                        brand,
-                        category,
-                        price,
-                        currency,
-                        availability,
-                        created_at
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """),
-                (
-                    product_id,
-                    feed_id,
-                    partner_name,
-                    sku,
-                    product_name,
-                    clean_value(row.get("description")),
-                    clean_value(row.get("brand")),
-                    clean_value(row.get("category")),
-                    parse_price(row.get("price")),
-                    clean_value(row.get("currency")),
-                    clean_value(row.get("availability")),
-                    now,
-                )
-            )
-
-            products_ingested += 1
 
         if DB_TYPE == "postgres":
             conn.commit()
@@ -292,8 +229,7 @@ async def upload_feed(
     return {
         "feed_id": feed_id,
         "job_id": submission_job_id,
-        "status": "uploaded",
-        "products_ingested": products_ingested
+        "status": "uploaded"
     }
 
 
