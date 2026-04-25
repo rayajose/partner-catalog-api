@@ -216,7 +216,7 @@ async def upload_feed(
             (
                 validation_job_id,
                 "validation",
-                "pending",
+                "queued",
                 now,
                 feed_id,
                 "CSV structure validation pending ETL processing."

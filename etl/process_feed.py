@@ -3,10 +3,11 @@ from __future__ import annotations
 import csv
 import io
 
+import boto3
+
 from db import get_connection, q, DB_TYPE, next_product_id_with_conn
 from services.s3_service import S3_RAW_BUCKET
 from utils import utc_now_iso
-import boto3
 
 
 def clean_value(value: str | None) -> str | None:
@@ -29,6 +30,22 @@ def parse_price(value: str | None) -> float | None:
         return None
 
 
+def update_validation_job(feed_id: str, status: str, message: str) -> None:
+    with get_connection() as conn:
+        conn.execute(
+            q("""
+                UPDATE jobs
+                SET status = ?, message = ?
+                WHERE feed_id = ?
+                  AND job_type = 'validation'
+            """),
+            (status, message, feed_id),
+        )
+
+        if DB_TYPE == "postgres":
+            conn.commit()
+
+
 def get_feed(feed_id: str) -> dict:
     with get_connection() as conn:
         feed = conn.execute(
@@ -41,7 +58,7 @@ def get_feed(feed_id: str) -> dict:
                 FROM feeds
                 WHERE feed_id = ?
             """),
-            (feed_id,)
+            (feed_id,),
         ).fetchone()
 
     if not feed:
@@ -122,7 +139,7 @@ def load_products(feed: dict, rows: list[dict]) -> int:
                     clean_value(row.get("currency")),
                     clean_value(row.get("availability")),
                     now,
-                )
+                ),
             )
 
             products_ingested += 1
@@ -134,18 +151,39 @@ def load_products(feed: dict, rows: list[dict]) -> int:
 
 
 def process_feed(feed_id: str) -> None:
-    feed = get_feed(feed_id)
-    bucket = feed["raw_file_bucket"] or S3_RAW_BUCKET
+    try:
+        update_validation_job(
+            feed_id=feed_id,
+            status="running",
+            message="ETL processing started.",
+        )
 
-    rows = read_csv_from_s3(
-        bucket=bucket,
-        object_key=feed["raw_file_s3_key"],
-    )
+        feed = get_feed(feed_id)
+        bucket = feed["raw_file_bucket"] or S3_RAW_BUCKET
 
-    products_ingested = load_products(feed, rows)
+        rows = read_csv_from_s3(
+            bucket=bucket,
+            object_key=feed["raw_file_s3_key"],
+        )
 
-    print(f"Processed feed {feed_id}")
-    print(f"Products ingested: {products_ingested}")
+        products_ingested = load_products(feed, rows)
+
+        update_validation_job(
+            feed_id=feed_id,
+            status="completed",
+            message=f"ETL processing completed. Products ingested: {products_ingested}.",
+        )
+
+        print(f"Processed feed {feed_id}")
+        print(f"Products ingested: {products_ingested}")
+
+    except Exception as exc:
+        update_validation_job(
+            feed_id=feed_id,
+            status="failed",
+            message=f"ETL processing failed: {exc}",
+        )
+        raise
 
 
 if __name__ == "__main__":

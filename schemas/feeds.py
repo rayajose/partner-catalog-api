@@ -21,7 +21,6 @@ class FeedCreateResponse(BaseModel):
     feed_id: str
     job_id: str
     status: str
-    products_ingested: int
 
     model_config = {
         "json_schema_extra": {
