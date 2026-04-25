@@ -46,3 +46,4 @@ nav:
   - Jobs API: jobs.md
   - Workflows: workflows.md
   - Errors: errors.md
+  - Python SDK Guide: sdk-python.md

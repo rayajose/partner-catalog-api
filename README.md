@@ -353,6 +353,20 @@ Ray Jose
 - Resume: [Download PDF](resume/rayjose-resume.pdf)
 - GitHub: https://github.com/rayajose
 
+## Python SDK Example
+
+This project includes a lightweight Python SDK-style client demonstrating how developers can interact with the API.
+
+- Docs: https://rayajose.github.io/partner-catalog-api/sdk-python/
+- Example code: `examples/sdk/`
+
+Run locally:
+
+```bash
+cd examples/sdk
+python example_usage.py
+```
+
 ## Additional Writing Samples
 
 For additional technical writing examples, including structured content, XML/DITA work, technical specifications, and compliance documentation, see:
