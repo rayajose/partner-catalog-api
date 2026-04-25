@@ -348,3 +348,7 @@ This project reflects production-style backend system design rather than a simpl
 ## Author
 
 Ray Jose
+
+- Portfolio: https://rayajose.github.io/partner-catalog-api/
+- Resume: [Download PDF](resume/rayjose-resume.pdf)
+- GitHub: https://github.com/rayajose
