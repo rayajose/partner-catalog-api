@@ -19,7 +19,7 @@ from db import (
 )
 from security import require_api_key
 from utils import utc_now_iso
-from services.s3_service import upload_raw_feed
+from services.s3_service import upload_raw_feed, S3_RAW_BUCKET
 
 router = APIRouter(
     prefix="/feeds",
@@ -178,9 +178,11 @@ async def upload_feed(
                     content_type,
                     status,
                     uploaded_at,
-                    validation_job_id
+                    validation_job_id,
+                    raw_file_s3_key,
+                    raw_file_bucket
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """),
             (
                 feed_id,
@@ -190,6 +192,8 @@ async def upload_feed(
                 "uploaded",
                 now,
                 validation_job_id,
+                raw_file_s3_key,
+                S3_RAW_BUCKET,
             )
         )
 
