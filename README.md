@@ -352,3 +352,9 @@ Ray Jose
 - Portfolio: https://rayajose.github.io/partner-catalog-api/
 - Resume: [Download PDF](resume/rayjose-resume.pdf)
 - GitHub: https://github.com/rayajose
+
+## Additional Writing Samples
+
+For additional technical writing examples, including structured content, XML/DITA work, technical specifications, and compliance documentation, see:
+
+- https://github.com/rayajose/writing-samples
