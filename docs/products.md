@@ -92,7 +92,7 @@ Response behavior:
 
 ```http
 GET /products?partner_name=Tech Haven&limit=5
-X-API-Key: demo-secret-key
+x-api-key: demo-secret-key
 ```
 
 ---
@@ -154,7 +154,7 @@ Returns a single product by its unique product ID.
 
 ```http
 GET /products/PR00001
-X-API-Key: demo-secret-key
+x-api-key: demo-secret-key
 ```
 
 ---
@@ -212,7 +212,7 @@ Returns all products associated with a specific feed.
 
 ```http
 GET /products/by-feed/FD00001
-X-API-Key: demo-secret-key
+x-api-key: demo-secret-key
 ```
 
 ---
@@ -242,7 +242,7 @@ X-API-Key: demo-secret-key
 
 ## Notes
 
-* All endpoints require a valid `X-API-Key` header
+* All endpoints require a valid `x-api-key` header
 * Product data is sourced from uploaded partner CSV feeds
 * Not all fields are guaranteed to be populated for every product
 * Results are ordered by `created_at` in descending order by default

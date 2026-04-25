@@ -1,19 +1,20 @@
 # Partner Catalog API
+> Includes REST API, AWS deployment, and SDK-style client with developer documentation
 
-A production-style REST API for ingesting, validating, and querying product data from multiple partner feeds.
+A production-style REST API that simulates how multi-partner e-commerce platforms ingest, validate, and serve product catalog data.
 
-This project demonstrates end-to-end API development, including data ingestion workflows, cloud deployment on AWS (ECS Fargate + RDS), and developer-focused documentation.
+This project demonstrates API design, backend data modeling, cloud deployment on AWS, and developer-focused documentation, including a Python SDK-style client.
 
 ---
 
 ## Purpose
 
-This project was built as a portfolio demonstration of:
+This project demonstrates:
 
 * REST API design
 * Data ingestion workflows
 * Cloud deployment (AWS ECS, RDS, ALB)
-* Technical documentation
+* Developer-focused documentation
 * Backend system modeling
 
 ---
@@ -86,6 +87,23 @@ Example of a successful request returning product data from the PostgreSQL datab
 
 ---
 
+## Python SDK Example
+
+This project includes a lightweight Python SDK-style client demonstrating how developers can interact with the API.
+
+- Docs: https://rayajose.github.io/partner-catalog-api/sdk-python/
+- Example code: `examples/sdk/`
+
+Run locally:
+
+```bash
+cd examples/sdk
+python example_usage.py
+```
+
+
+---
+
 ## Architecture
 
 The API is built using FastAPI and follows a modular structure:
@@ -134,7 +152,7 @@ Full deployment details:
 All endpoints require an API key passed in the request header:
 
 ```
-X-API-Key: demo-secret-key
+x-api-key: demo-secret-key
 ```
 
 Requests without a valid API key will return:
@@ -333,6 +351,19 @@ x-api-key: demo-secret-key
 
 ---
 
+## Why This Project
+
+Modern platforms rely on ingesting and normalizing data from multiple external partners. This project simulates that pattern by modeling:
+
+- Partner-submitted product feeds
+- Asynchronous validation workflows
+- Centralized product storage
+- Queryable APIs for downstream systems
+
+It reflects the types of backend services used in e-commerce platforms, data pipelines, and integration ecosystems.
+
+---
+
 ## What This Project Demonstrates
 
 * End-to-end API design and implementation
@@ -352,20 +383,6 @@ Ray Jose
 - Portfolio: https://rayajose.github.io/partner-catalog-api/
 - Resume: [Download PDF](resume/rayjose-resume.pdf)
 - GitHub: https://github.com/rayajose
-
-## Python SDK Example
-
-This project includes a lightweight Python SDK-style client demonstrating how developers can interact with the API.
-
-- Docs: https://rayajose.github.io/partner-catalog-api/sdk-python/
-- Example code: `examples/sdk/`
-
-Run locally:
-
-```bash
-cd examples/sdk
-python example_usage.py
-```
 
 ## Additional Writing Samples
 
