@@ -16,8 +16,13 @@ theme:
     - javascripts/glightbox-init.js
   palette:
     - scheme: default
-      primary: blue grey
-      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
 
 markdown_extensions:
   - pymdownx.superfences
