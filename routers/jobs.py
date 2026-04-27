@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
 from schemas.common import ErrorResponse
 from schemas.jobs import JobResponse
 from db import get_connection, q, DB_TYPE
 from security import require_api_key
+from etl.process_feed import process_feed
 
 router = APIRouter(
     prefix="/jobs",
@@ -74,3 +75,37 @@ def get_job(job_id: str):
         )
 
     return job_row_to_dict(job)
+
+@router.post(
+    "/{job_id}/run",
+    summary="Run a job",
+    description="Executes a validation job (ETL processing)."
+)
+def run_job(job_id: str):
+    with get_connection() as conn:
+        job = conn.execute(
+            q("""
+                SELECT job_id, job_type, feed_id
+                FROM jobs
+                WHERE job_id = ?
+            """),
+            (job_id,)
+        ).fetchone()
+
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    job_id_value, job_type, feed_id = job
+
+    if job_type != "validation":
+        raise HTTPException(
+            status_code=400,
+            detail="Only validation jobs can be run"
+        )
+
+    process_feed(feed_id)
+
+    return {
+        "job_id": job_id,
+        "status": "completed"
+    }

@@ -34,6 +34,10 @@ FEED_COLUMNS = [
     "status",
     "uploaded_at",
     "validation_job_id",
+    "validation_status",
+    "validation_message",
+    "raw_file_s3_key",
+    "raw_file_bucket",
 ]
 
 
@@ -239,8 +243,8 @@ async def upload_feed(
     responses={404: {"model": ErrorResponse, "description": "Feed not found"}},
     summary="Retrieve feed details",
     description=(
-        "Retrieves metadata for a specific feed, including upload status and "
-        "associated validation job."
+        "Retrieves metadata for a specific feed, including upload status, "
+        "associated validation job details, and raw file storage metadata."
     ),
 )
 async def read_feed(feed_id: str):
@@ -248,15 +252,21 @@ async def read_feed(feed_id: str):
         feed = conn.execute(
             q("""
                 SELECT
-                    feed_id,
-                    partner_name,
-                    file_name,
-                    content_type,
-                    status,
-                    uploaded_at,
-                    validation_job_id
-                FROM feeds
-                WHERE feed_id = ?
+                    f.feed_id,
+                    f.partner_name,
+                    f.file_name,
+                    f.content_type,
+                    f.status,
+                    f.uploaded_at,
+                    f.validation_job_id,
+                    j.status AS validation_status,
+                    j.message AS validation_message,
+                    f.raw_file_s3_key,
+                    f.raw_file_bucket
+                FROM feeds f
+                LEFT JOIN jobs j
+                    ON f.validation_job_id = j.job_id
+                WHERE f.feed_id = ?
             """),
             (feed_id,)
         ).fetchone()
